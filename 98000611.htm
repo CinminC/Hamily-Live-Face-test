@@ -2,6 +2,7 @@
 <!-- saved from url=(0082)https://generator.artblocks.io/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/98000611 -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><script src="./98000611_files/p5.min.js.下載"></script><script>let tokenData = {"tokenId":"98000611","hash":"0xf16d106f33b425762458f3596e9dcc66f726ff438e72a8eeaf055e1a1ee8233e"}</script>
 <script src="https://unpkg.com/ml5@0.1.1/dist/ml5.min.js" type="text/javascript"></script>
+<script src="https://unpkg.com/ml5@latest/dist/ml5.min.js" type="text/javascript"></script>
 <script>
 class Random {
     constructor(seed) {
@@ -132,6 +133,8 @@ class Robot {
             strokeWeight: Rseed.random_between(WIDTH/45, WIDTH/22.5),
             //glassStrokeWeight: Rseed.random_between(15, 25),
             glassStrokeWeight: Rseed.random_between(WIDTH/45, WIDTH/30),
+            SizeMultiply : 1,
+            leftEyeBrowPos : 0,
         };
 
         Object.assign(def, args);
@@ -150,7 +153,7 @@ class Robot {
         }*/
 
         // rotate(this.ang + sin(mouseX / 200 + frameCount / 50 + this.p.x + this.p.y) / 4);
-
+        scale(this.SizeMultiply)
         rectMode(CENTER);
         ellipseMode(CENTER);
         fill(this.colors[0]);
@@ -189,7 +192,7 @@ class Robot {
         noStroke();
         fill(this.colors[3]);
 
-        //--------------Eyebrows--------------//
+        //--------------Right Eyebrows--------------//
         push();
         fill(this.colors[4]);
         rotate(sin(frameCount / 30) / 6);
@@ -197,9 +200,10 @@ class Robot {
         rect(WIDTH/10.9, -WIDTH/10.9 + sin(frameCount / 50 + this.p.y - mouseX / 25) * 5, this.eyeSizes.x * 1.3, this.p.x/15);
         pop();
 
-
+        //--------------Left Eyebrows--------------//
         push();
         fill(this.colors[6]);
+        translate(0, -this.leftEyeBrowPos);
         rotate(sin(frameCount / 20 + 1) / 5);
         // rect(-18 * 4.5, -18 * 4.5 + sin(frameCount / 20 + mouseY / 25 + this.p.y) * 5, this.eyeSizes.x, 30);
         rect(-WIDTH/10.9, -WIDTH/10.9 + sin(frameCount / 20 + mouseY / 25 + this.p.y) * 5, this.eyeSizes.x, this.p.x/15);
@@ -330,8 +334,10 @@ class Robot {
         pop();
     }
 
-    update(robotPosX, robotPosY) {
-        this.p=createVector(robotPosX, robotPosY)
+    update(pos, sizeMultiply, leftEyeBrowPos) {
+        this.p = pos;
+        this.SizeMultiply = sizeMultiply;
+        this.leftEyeBrowPos = leftEyeBrowPos;
     }
 }
 
@@ -374,6 +380,8 @@ let pitircik = Rseed.random_choice(availableNoiseLevels);
 let video;
 let poseNet;
 let pose;
+let faceapi;
+let detections;
 
 function preload() {
     const loadablePlanets = [
@@ -411,6 +419,14 @@ function gotPoses(poses){
   }  
 }
 
+// by default all options are set to true
+const detection_options = {
+    withLandmarks: true,
+    withDescriptors: false,
+}
+
+
+
 let bg;
 let seedNum;
 let noiseImg;
@@ -435,14 +451,21 @@ let mouthSvg = Rseed.random_int(0, 9)
 let glassType = Rseed.random_int(0, 3)
 let glassSVG = Rseed.random_int(0, 17)
 let glassVector = Rseed.random_int(0, 1)
-let robotPosX = 0;
-let robotPosY = 0;
-let smoothedRobotPosX = 0;
-let smoothedRobotPosY = 0;
+let robotPos;
+let smoothedRobotPos;
 let smoothedPosValue = 0.1
 let sRobotPosX_NORMALIZE = 0;
 let sRobotPosY_NORMALIZE = 0;
-
+let mouthTop;
+let mouthBottom;
+let nose;
+let leftEye;
+let rightEye;
+let rightEyeBrow;
+let leftEyeBrow;
+let boxWidth = WIDTH;
+let robotSizeMultiply = 1;
+let leftEyebrowPos = 0;
 
 function setup() {
     createCanvas(WIDTH, HEIGHT);
@@ -451,9 +474,11 @@ function setup() {
     smooth(8);
 
     video = createCapture(VIDEO);
+    video.size(width, height);
     video.hide();
-    poseNet = ml5.poseNet(video, modelLoaded);
-    poseNet.on('pose', gotPoses);
+    // poseNet = ml5.poseNet(video, modelLoaded);
+    // poseNet.on('pose', gotPoses);
+    faceapi = ml5.faceApi(video, detection_options, modelReady)
 
     noiseImg = createGraphics(WIDTH, HEIGHT);
     noiseImg.noStroke();
@@ -495,8 +520,9 @@ function setup() {
     noiseY = Rseed.random_between(0, 100);
     noiseF = Rseed.random_between(0, 100);
     colorState = 0;
-
-    addRobot(robotPosX, robotPosY);
+    robotPos = createVector(WIDTH/2, HEIGHT/2);
+    smoothedRobotPos = createVector(WIDTH/2, HEIGHT/2);
+    addRobot(robotPos);
 
     sunColor = color(Rseed.random_choice(colorYellow));
     mountainColor = color(Rseed.random_choice(colorBlue));
@@ -510,6 +536,76 @@ function setup() {
 
 }
 
+function modelReady() {
+    console.log('ready!')
+    console.log(faceapi)
+    faceapi.detect(gotResults)
+
+}
+
+
+function gotResults(err, result) {
+    if (err) {
+        console.log(err)
+        return
+    }
+    // console.log(result)
+    detections = result;
+    faceapi.detect(gotResults)
+}
+
+function drawBox(detections){
+    for(let i = 0; i < detections.length; i++){
+        const alignedRect = detections[i].alignedRect;
+        const x = alignedRect._box._x
+        const y = alignedRect._box._y
+        boxWidth = alignedRect._box._width
+        const boxHeight  = alignedRect._box._height
+        push();
+            rectMode(CORNER);
+            noFill();
+            stroke(0, 255, 0);
+            strokeWeight(2);
+            rect(-WIDTH+x, y, boxWidth, boxHeight);        
+        pop();
+        
+    }
+    
+    
+}
+
+function drawLandmarks(detections){
+    noFill();
+    stroke(0, 255, 0)
+    strokeWeight(20)
+
+    for(let i = 0; i < detections.length; i++){
+        mouthTop = detections[i].parts.mouth[3];  //20
+        mouthBottom = detections[i].parts.mouth[9];  //20
+        nose = detections[i].parts.nose[3];  //9
+        leftEye = detections[i].parts.leftEye[2];  //6
+        rightEye = detections[i].parts.rightEye[2];  //6
+        rightEyeBrow = detections[i].parts.rightEyeBrow[2];  //5
+        leftEyeBrow = detections[i].parts.leftEyeBrow[2];  //5
+
+        drawPart(mouthTop);
+        drawPart(mouthBottom);
+        drawPart(nose);
+        drawPart(leftEye);
+        drawPart(leftEyeBrow);
+        drawPart(rightEye);
+        drawPart(rightEyeBrow);
+
+    }
+
+}
+
+function drawPart(feature){
+        const x = feature._x
+        const y = feature._y
+        point(-WIDTH+x, y);   
+}
+
 
 function draw() {
     randomSeed(seedNum);
@@ -517,47 +613,65 @@ function draw() {
     background(bgColor);
     noStroke();
     //------poseNet------//
+    // push()
+    //     imageMode(CORNER);
+    //     scale(-0.4,0.4)
+    //     image(video,-WIDTH,0);
+    //     if(pose){
+    //         let eyeL = pose.keypoints[1].position
+    //         let eyeR = pose.keypoints[2].position
+    //         let d = dist(eyeL.x,eyeL.y, eyeR.x, eyeR.y)
+            
+    //         //------draw nose position-----//
+    //         smoothedRobotPos = smoothValue(pose.keypoints[0].position, smoothedRobotPos, smoothedPosValue)
+    //         fill(0,255,0)
+    //         ellipse(-WIDTH+pose.keypoints[0].position.x, pose.keypoints[0].position.y, d*0.3)  //Nose Position
+    //         fill(255,0,0)
+    //         ellipse(-smoothedRobotPos.x, smoothedRobotPos.y, d*0.3)  //Remap Position
+    //     }
+    // pop()
+
+    //-----FaceApi-----//
     push()
         imageMode(CORNER);
-        scale(-0.4,0.4)
-        image(video,-WIDTH,0);
-        if(pose){
-            let eyeL = pose.keypoints[1].position
-            let eyeR = pose.keypoints[2].position
-            let d = dist(eyeL.x,eyeL.y, eyeR.x, eyeR.y)
-            
-            //------draw nose position-----//
+        // scale(-0.4,0.4)
+        // image(video,-WIDTH,0);
+        scale(-0.2,0.2);
+        translate(-WIDTH,0);
+        
+        image(video, 0, 0, -WIDTH, HEIGHT);
+        if (detections){
+        
+            push()
 
-            // robotPosX=map(pose.keypoints[0].position.x, 0, WIDTH, WIDTH, 0)
-            robotPosX=map(pose.keypoints[0].position.x, 0, 635, WIDTH, 0)   //Remap Value to exact 0-WIDTH
-            // robotPosY=pose.keypoints[0].position.y
-            robotPosY=map(pose.keypoints[0].position.y, 0, 500, 0, HEIGHT)  //Remap Value to exact 0-HEIGHT
-            smoothedRobotPosX = lerp(smoothedRobotPosX, robotPosX, smoothedPosValue)
-            smoothedRobotPosY = lerp(smoothedRobotPosY, robotPosY, smoothedPosValue)
-            fill(0,255,0)
-            ellipse(-WIDTH+pose.keypoints[0].position.x, pose.keypoints[0].position.y, d*0.3)  //Nose Position
-            ellipse(-smoothedRobotPosX, smoothedRobotPosY, d*0.5)  //Remap Position
+                if (detections) {
+                    if (detections.length > 0) {
+                        // console.log(detections)
+                        drawBox(detections);
+                        drawLandmarks(detections);
+                        smoothedRobotPos = smoothValue(nose, smoothedRobotPos, smoothedPosValue);
+                        robotSizeMultiply = lerp(boxWidth, robotSizeMultiply, smoothedPosValue);
+                        robotSizeMultiply = 0.5 + (robotSizeMultiply/WIDTH);
+                        leftEyebrowPos = lerp(pow((leftEye.y - leftEyeBrow.y) / boxWidth, 2) * 1000, leftEyebrowPos, 0.8);
+                        print(leftEyebrowPos)
+                    }
+
+                }
+            pop()
+            
+
         }
+        
     pop()
 
-    if(smoothedRobotPosX<0){
-        smoothedRobotPosX = 0;
-    }else if(smoothedRobotPosX>WIDTH){
-        smoothedRobotPosX = WIDTH;
-    }
-    if(smoothedRobotPosY<0){
-        smoothedRobotPosY = 0;
-    }else if(smoothedRobotPosY>HEIGHT){
-        smoothedRobotPosY = HEIGHT;
-    }
-    sRobotPosX_NORMALIZE = map(smoothedRobotPosX, 0, WIDTH, 0, 1);
-    sRobotPosY_NORMALIZE = map(smoothedRobotPosY, 0, HEIGHT, 0, 1);
+    sRobotPosX_NORMALIZE = map(smoothedRobotPos.x, 0, WIDTH, 0, 1);
+    sRobotPosY_NORMALIZE = map(smoothedRobotPos.y, 0, HEIGHT, 0, 1);
     push();
         fill(250)
         textSize(20);
         text("Face", 10, 20);
-        text("posX: "+floor(smoothedRobotPosX), 10, 50);
-        text("posY: "+floor(smoothedRobotPosY), 10, 80);
+        text("posX: "+floor(smoothedRobotPos.x), 10, 50);
+        text("posY: "+floor(smoothedRobotPos.y), 10, 80);
     pop();
     
     bgTargetColor = (sRobotPosY_NORMALIZE<0.5)? bgDayColor : bgNightColor;
@@ -613,7 +727,7 @@ function draw() {
     pop();
 
 
-    robot.update(smoothedRobotPosX, smoothedRobotPosY);
+    robot.update(smoothedRobotPos, robotSizeMultiply, leftEyebrowPos);
     robot.draw();
 
     boat(WIDTH / 2, HEIGHT / 2);
@@ -702,6 +816,30 @@ function boat(x, y) {
     pop();
 }
 
+function smoothValue(data, smoothedData, smoothedValue){
+    let dx = map(data._x, 0, WIDTH, WIDTH, 0);
+    let dy = data._y;
+    //poseNet
+    // let dx = map(data.x, 0, WIDTH, WIDTH, 0);
+    // let dy = data.y;
+    let smoothedx = smoothedData.x;
+    let smoothedy = smoothedData.y;
+    smoothedx = lerp(smoothedx, dx, smoothedValue);
+    smoothedy = lerp(smoothedy, dy, smoothedValue);
+
+    if(smoothedx < 0){
+        smoothedx = 0;
+    }else if(smoothedx > WIDTH){
+        smoothedx = WIDTH;
+    }
+    if(smoothedy < 0){
+        smoothedy = 0;
+    }else if(smoothedy>HEIGHT){
+        smoothedy = HEIGHT;
+    }
+    let sdata = createVector(smoothedx, smoothedy)
+    return sdata;
+}
 </script><style type="text/css">html {
   height: 100%;
 }
