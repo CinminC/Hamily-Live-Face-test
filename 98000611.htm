@@ -133,8 +133,10 @@ class Robot {
             strokeWeight: Rseed.random_between(WIDTH/45, WIDTH/22.5),
             //glassStrokeWeight: Rseed.random_between(15, 25),
             glassStrokeWeight: Rseed.random_between(WIDTH/45, WIDTH/30),
-            SizeMultiply : 1,
-            leftEyeBrowPos : 0,
+            SizeMultiply: 1,
+            leftEyeBrowPos: 0,
+            leftEyeBrowPos: 0,
+            robotRotation: 0
         };
 
         Object.assign(def, args);
@@ -148,6 +150,7 @@ class Robot {
         push();
 
         translate(this.p.x, this.p.y);
+        rotate(-this.robotRotation);
         /*if(HEIGHT < 600){
             scale(0.5)
         }*/
@@ -195,7 +198,8 @@ class Robot {
         //--------------Right Eyebrows--------------//
         push();
         fill(this.colors[4]);
-        rotate(sin(frameCount / 30) / 6);
+        translate(0, -this.rightEyeBrowPos);
+        // rotate(sin(frameCount / 30) / 6);
         //rect(18 * 4.5, -18 * 4.5 + sin(frameCount / 50 + this.p.y - mouseX / 25) * 5, this.eyeSizes.x * 1.5, 30);
         rect(WIDTH/10.9, -WIDTH/10.9 + sin(frameCount / 50 + this.p.y - mouseX / 25) * 5, this.eyeSizes.x * 1.3, this.p.x/15);
         pop();
@@ -204,7 +208,7 @@ class Robot {
         push();
         fill(this.colors[6]);
         translate(0, -this.leftEyeBrowPos);
-        rotate(sin(frameCount / 20 + 1) / 5);
+        // rotate(sin(frameCount / 20 + 1) / 5);
         // rect(-18 * 4.5, -18 * 4.5 + sin(frameCount / 20 + mouseY / 25 + this.p.y) * 5, this.eyeSizes.x, 30);
         rect(-WIDTH/10.9, -WIDTH/10.9 + sin(frameCount / 20 + mouseY / 25 + this.p.y) * 5, this.eyeSizes.x, this.p.x/15);
         pop();
@@ -334,14 +338,23 @@ class Robot {
         pop();
     }
 
-    update(pos, sizeMultiply, leftEyeBrowPos) {
+    update(pos, features) {
         this.p = pos;
-        this.SizeMultiply = sizeMultiply;
-        this.leftEyeBrowPos = leftEyeBrowPos;
+        this.SizeMultiply = features.robotSizeMultiply;
+        this.leftEyeBrowPos = features.leftEyebrowPos;
+        this.rightEyeBrowPos = features.rightEyebrowPos;
+        this.robotRotation = features.robotRotation;
     }
 }
 
-
+class FacialFeatures {
+  constructor(args) {
+    this.leftEyebrowPos = args.leftEyebrowPos;
+    this.robotSizeMultiply = args.robotSizeMultiply;
+    this.rightEyebrowPos = args.rightEyebrowPos;
+    this.robotRotation = args.robotRotation
+  }
+}
 
 let seed = parseInt(tokenData.hash.slice(0, 16), 16);
 let Rseed = new Random(seed);
@@ -464,15 +477,19 @@ let rightEye;
 let rightEyeBrow;
 let leftEyeBrow;
 let boxWidth = WIDTH;
-let robotSizeMultiply = 1;
-let leftEyebrowPos = 0;
+let faceSize = WIDTH;
+let facialFeatures = new FacialFeatures({
+    leftEyebrowPos: 0,
+    rightEyebrowPos: 0, 
+    robotSizeMultiply: 1,
+    robotRotation: 0
+});
 
 function setup() {
     createCanvas(WIDTH, HEIGHT);
     rect(100 * M, 500 * M, 50 * M, 50 * M);
 
     smooth(8);
-
     video = createCapture(VIDEO);
     video.size(width, height);
     video.hide();
@@ -529,7 +546,7 @@ function setup() {
     bgColor = color(0);
     bgNightColor = color(0);
     bgDayColor = sunColor;
-    bgDayColor.setAlpha(5);
+    bgDayColor.setAlpha(1);
     c1 = color(29, 90, 231);
     c2 = color(255, 209, 102);
     c3 = color(128, 255, 219);
@@ -649,11 +666,12 @@ function draw() {
                         // console.log(detections)
                         drawBox(detections);
                         drawLandmarks(detections);
-                        smoothedRobotPos = smoothValue(nose, smoothedRobotPos, smoothedPosValue);
-                        robotSizeMultiply = lerp(boxWidth, robotSizeMultiply, smoothedPosValue);
-                        robotSizeMultiply = 0.5 + (robotSizeMultiply/WIDTH);
-                        leftEyebrowPos = lerp(pow((leftEye.y - leftEyeBrow.y) / boxWidth, 2) * 1000, leftEyebrowPos, 0.8);
-                        print(leftEyebrowPos)
+                        smoothedRobotPos = smoothValue(smoothedRobotPos, nose, smoothedPosValue);
+                        faceSize = lerp(faceSize, boxWidth, smoothedPosValue);
+                        facialFeatures.robotSizeMultiply = 0.5 + (faceSize / WIDTH);
+                        facialFeatures.leftEyebrowPos = lerp(facialFeatures.leftEyebrowPos, pow((leftEye.y - leftEyeBrow.y) / boxWidth, 2) * WIDTH * 2, 0.6);
+                        facialFeatures.rightEyebrowPos = lerp(facialFeatures.rightEyebrowPos, pow((rightEye.y - rightEyeBrow.y) / boxWidth, 2) * WIDTH * 2, 0.6);
+                        facialFeatures.robotRotation = lerp(facialFeatures.robotRotation, atan2(rightEye.y - leftEye.y, rightEye.x - leftEye.x), smoothedPosValue);
                     }
 
                 }
@@ -726,8 +744,8 @@ function draw() {
     }
     pop();
 
-
-    robot.update(smoothedRobotPos, robotSizeMultiply, leftEyebrowPos);
+    
+    robot.update(smoothedRobotPos, facialFeatures);
     robot.draw();
 
     boat(WIDTH / 2, HEIGHT / 2);
@@ -816,7 +834,7 @@ function boat(x, y) {
     pop();
 }
 
-function smoothValue(data, smoothedData, smoothedValue){
+function smoothValue(smoothedData, data, smoothedValue){
     let dx = map(data._x, 0, WIDTH, WIDTH, 0);
     let dy = data._y;
     //poseNet
