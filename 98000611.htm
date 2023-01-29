@@ -135,8 +135,17 @@ class Robot {
             glassStrokeWeight: Rseed.random_between(WIDTH/45, WIDTH/30),
             SizeMultiply: 1,
             leftEyeBrowPos: 0,
-            leftEyeBrowPos: 0,
-            robotRotation: 0
+            rightEyeBrowPos: 0,
+            leftEyeMultiply: 1,
+            rightEyeMultiply: 1,
+            robotRotation: 0,
+            mouthVerMultiply: 0,
+            mouthHorMultiply: 0,
+            mouthLeftMultiply: 0,
+            mouthRightMultiply: 0,
+            addPos: 0,
+            mouthThickness: 0,
+            mouthWide: 0
         };
 
         Object.assign(def, args);
@@ -178,39 +187,58 @@ class Robot {
         pop();
 
         //--------------Face--------------//
-        rect(0, 0, this.size.x, this.size.y, this.corner);
+        push();
+        rectMode(CORNER);
+        rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y + this.addPos * 2, this.corner);
+        pop();
         noStroke();
 
-        //--------------Eyes--------------//
+        //--------------Left Eye--------------//
+        // let slX = (this.leftEyeMultiply > 0.8) ? this.leftEyeMultiply : 1; 
+        push()
+        translate(-WIDTH/10.9, 0)
+        scale(1, this.leftEyeMultiply)
         stroke(this.colors[1]);
         strokeWeight(this.strokeWeight);
         fill(0);
         // circle(-18 * 4.5, 0, this.eyeSizes.x - sin(frameCount / 50 + mouseY / 20) * 2 * 4.5);
-        circle(-WIDTH/10.9, 0, this.eyeSizes.x - sin(frameCount / 50 + mouseY / 20) * this.p.x / 50);
+        circle(0, 0, this.eyeSizes.x - sin(frameCount / 50 + mouseY / 20) * this.p.x / 50);
+        pop()
 
+        //--------------Right Eye--------------//
+        // let srX = (this.leftEyeMultiply > 0.8) ? this.leftEyeMultiply : 1; 
+        push()
+        translate(WIDTH/10.9, 0)
+        scale(1, this.rightEyeMultiply)
         stroke(this.colors[2]);
         strokeWeight(this.strokeWeight / 2);
+        fill(0);
         // circle(18 * 4.5, 0, this.eyeSizes.x + sin(frameCount / 50 + mouseY / 20) * 2 * 4.5);
-        circle(WIDTH/10.9, 0, this.eyeSizes.x + sin(frameCount / 50 + mouseY / 20) * this.p.x / 50);
+        circle(0, 0, this.eyeSizes.x + sin(frameCount / 50 + mouseY / 20) * this.p.x / 50);
+        pop()
+        //--------------Right Eyebrows--------------//
         noStroke();
         fill(this.colors[3]);
-
-        //--------------Right Eyebrows--------------//
+       
         push();
         fill(this.colors[4]);
-        translate(0, -this.rightEyeBrowPos);
-        // rotate(sin(frameCount / 30) / 6);
+        translate(0, -this.rightEyeBrowPos * this.p.y / 15);
+        rotate(sin(frameCount / 30) / 6);
         //rect(18 * 4.5, -18 * 4.5 + sin(frameCount / 50 + this.p.y - mouseX / 25) * 5, this.eyeSizes.x * 1.5, 30);
-        rect(WIDTH/10.9, -WIDTH/10.9 + sin(frameCount / 50 + this.p.y - mouseX / 25) * 5, this.eyeSizes.x * 1.3, this.p.x/15);
+        // rect(WIDTH/10.9, -WIDTH/10.9 + sin(frameCount / 50 + this.p.y - mouseX / 25) * 5, this.eyeSizes.x * 1.3, this.p.x/15);
+        rect(WIDTH/10.9, -WIDTH/10.9 + sin(frameCount / 50) * 5, this.eyeSizes.x * 1.3, this.p.x/15);
+
         pop();
 
         //--------------Left Eyebrows--------------//
         push();
         fill(this.colors[6]);
-        translate(0, -this.leftEyeBrowPos);
-        // rotate(sin(frameCount / 20 + 1) / 5);
+        translate(0, -this.leftEyeBrowPos * this.p.y / 15);
+        rotate(sin(frameCount / 20 + 1) / 5);
         // rect(-18 * 4.5, -18 * 4.5 + sin(frameCount / 20 + mouseY / 25 + this.p.y) * 5, this.eyeSizes.x, 30);
-        rect(-WIDTH/10.9, -WIDTH/10.9 + sin(frameCount / 20 + mouseY / 25 + this.p.y) * 5, this.eyeSizes.x, this.p.x/15);
+        // rect(-WIDTH/10.9, -WIDTH/10.9 + sin(frameCount / 20 + mouseY / 25 + this.p.y) * 5, this.eyeSizes.x, this.p.x/15);
+        rect(-WIDTH/10.9, -WIDTH/10.9 + sin(frameCount / 20) * 5, this.eyeSizes.x, this.p.x/15);
+
         pop();
 
         //--------------Forehead Rect--------------//
@@ -223,7 +251,7 @@ class Robot {
         //circle(0, this.size.y / 10 + sin(frameCount / 20) * 5, 20, 20);
         circle(0, this.size.y / 10 + sin(frameCount / 20) * 5, WIDTH/45, WIDTH/45);
 
-        //--------------Mouth--------------//
+        //--------------Mouth--------------//    
         push();
         switch (int(this.mouth)) {
             case 0:
@@ -232,48 +260,69 @@ class Robot {
                         rotate(sin(frameCount / 10 + mouseX / 50 + mouseY / 50) / 5);
                         fill(this.colors[6]);
                         //rect(0, this.size.y / 3, this.size.x / 2, 5 * 4.5, 30);
-                        rect(0, this.size.y / 3, this.size.x / 2, this.p.x/15, this.p.x/15);
+                        push();
+                        translate(0, this.size.y / 3 + this.addPos);
+                        rotate(this.mouthVerMultiply / 2 * sin(frameCount / 10));
+                        rect(0, 0, this.size.x / 2 + this.mouthWide, this.p.x/15 + this.mouthThickness / 5, this.p.x/15 + this.mouthThickness / 5);
+                        pop();
                         break;
                     case 1:
                         rotate(sin(frameCount / 10 + mouseX / 50 + mouseY / 50) / 5);
                         noStroke();
                         fill(this.colors[7]);
                         //arc(0, this.size.y / 4, 160, 120, 0, PI, CHORD);
-                        arc(0, this.size.y / 4, WIDTH/5.5, this.p.x/4, 0, PI, CHORD);
+                        arc(0, this.size.y / 4 + this.addPos /2, WIDTH/5.5 + this.mouthWide, this.p.x/4 + this.mouthThickness, 0, PI, CHORD);
                         break;
                     case 2:
                         noStroke();
                         fill(this.colors[8]);
                         // arc(0, this.size.y / 3, 120 - sin(frameCount / 50) * 30, 80, 0, TWO_PI, CHORD);
-                        arc(0, this.size.y / 3, this.p.x/4 - sin(frameCount / 50) * this.p.x/15, WIDTH/11, 0, TWO_PI, CHORD);
+                        arc(0, this.size.y / 3 + this.addPos, this.p.x/4 - sin(frameCount / 50) * this.p.x/15 + this.mouthWide, WIDTH/11 + this.mouthThickness, 0, TWO_PI, CHORD);
+                        // //test dot
+                        // fill(255,0,0)
+                        // circle(0, this.size.y / 3+this.addPos,10)
+                        // fill(0,255,0)
+                        // circle(this.p.x/4 - sin(frameCount / 50) * this.p.x/15- sin(frameCount / 50) * this.p.x/15, WIDTH/11, 10)
                         break;
                     case 3:
+                        push();
                         stroke(this.colors[2]);
+                        strokeWeight(this.strokeWeight / 2 + this.mouthThickness / 10);
                         noFill();
                         // arc(0, this.size.y / 2.5, 120, 70 - sin(frameCount / 50) * 10, PI, TWO_PI);
-                        arc(0, this.size.y / 2.5, this.p.x/4, WIDTH/11.5 - sin(frameCount / 50) * this.p.x/45, PI, TWO_PI);
+                        arc(0, this.size.y / 2.5 + this.addPos, this.p.x/4 + this.mouthWide, WIDTH/11.5 - sin(frameCount / 50) * this.p.x/45 + this.mouthThickness, PI, TWO_PI);
                         //  arc(0, this.size.y/4, 120-sin(frameCount/50)*30, 80, 0, PI, TWO_PI);
+                        pop();
                         break;
                 }
                 break
             case 1:
+                push();
                 stroke(this.colors[2]);
-                noFill();
+                strokeWeight(this.strokeWeight / 2 + this.mouthThickness / 10);
+                noFill();      
                 // arc(0, this.size.y / 4, 120 - sin(frameCount / 50) * 30, 80, 0, PI, TWO_PI);
-                arc(0, this.size.y / 4, this.p.x/4 - sin(frameCount / 50) * this.p.x/15, WIDTH/11, 0, PI, TWO_PI);
+                arc(0, this.size.y / 4 + this.addPos, this.p.x/4 - sin(frameCount / 50) * this.p.x/15 + this.mouthWide, WIDTH/11 + this.mouthThickness, 0, PI, TWO_PI);
+                pop();
                 break;
             case 2:
                 rotate(sin(frameCount / 10 + mouseX / 50 + mouseY / 50) / 5);
                 fill(this.colors[6]);
+                push();
+                translate(0, this.size.y / 3 + this.addPos);
+                rotate(this.mouthVerMultiply / 2 * sin(frameCount / 10));
                 // rect(0, this.size.y / 3, this.size.x / 4, 5 * 4.5, 30);
-                rect(0, this.size.y / 3, this.size.x / 4, this.p.x / 15, this.p.x/15);
+                rect(0, 0, this.size.x / 4 + this.mouthWide, this.p.x / 15 + this.mouthThickness / 5, this.p.x/15 + this.mouthThickness / 5);
+                pop();
                 break;
             case 3:
-                image(this.botLips, -WIDTH/12, WIDTH/10.2, WIDTH/6, WIDTH/16.5);
+                image(this.botLips , -WIDTH/12 - this.mouthWide / 2, WIDTH/10.2, WIDTH/6 + this.mouthWide, WIDTH/16.5 + this.mouthThickness);
+                // imageMode(CORNERS)
+                // image(this.botLips , -WIDTH/12, WIDTH/10.2, -WIDTH/12 + WIDTH/6 +this.p.x / 5*this.mouthRightMultiply , WIDTH/10.2 + WIDTH/16.5 + this.mouthThickness);
+                // pop()
                 break;
         }
         pop();
-
 
         push();
         switch (int(this.glassType)) {
@@ -343,7 +392,16 @@ class Robot {
         this.SizeMultiply = features.robotSizeMultiply;
         this.leftEyeBrowPos = features.leftEyebrowPos;
         this.rightEyeBrowPos = features.rightEyebrowPos;
+        this.leftEyeMultiply = features.leftEyeMultiply;
+        this.rightEyeMultiply = features.rightEyeMultiply;
         this.robotRotation = features.robotRotation;
+        this.mouthVerMultiply = features.mouthVerMulitply;
+        this.mouthHorMultiply = features.mouthHorMulitply;
+        this.mouthRightMultiply = features.mouthRightMultiply;
+        this.mouthLeftMultiply = features.mouthLeftMultiply;
+        this.addPos = (this.mouthVerMultiply > 0) ? this.mouthVerMultiply *50 : 0;
+        this.mouthThickness = this.p.x / 5 * this.mouthVerMultiply;
+        this.mouthWide = this.p.x / 5 * this.mouthHorMultiply;
     }
 }
 
@@ -352,7 +410,14 @@ class FacialFeatures {
     this.leftEyebrowPos = args.leftEyebrowPos;
     this.robotSizeMultiply = args.robotSizeMultiply;
     this.rightEyebrowPos = args.rightEyebrowPos;
-    this.robotRotation = args.robotRotation
+    this.robotRotation = args.robotRotation;
+    this.leftEyeMultiply = args.leftEyeMultiply;
+    this.rightEyeMultiply = args.rightEyeMultiply;
+    this.mouthVerMulitply = args.mouthVerMulitply;
+    this.mouthHorMulitply = args.mouthHorMulitply;
+    this.mouthLeftMultiply = args.mouthLeftMultiply;
+    this.mouthRightMultiply = args.mouthRightMultiply;
+    this.centerX = args.centerX;
   }
 }
 
@@ -458,8 +523,10 @@ var DIM = Math.min(WIDTH, HEIGHT);
 var M = DIM / DEFAULT_SIZE;
 let ellipse1$ = HEIGHT / 5 + HEIGHT / 30
 let ellipse2$ = HEIGHT / 5 + HEIGHT / 15
-let mouth = Rseed.random_int(0, 3)
-let mouthVector = Rseed.random_int(0, 3)
+// let mouth = Rseed.random_int(0, 3)
+let mouth = 2
+// let mouthVector = Rseed.random_int(0, 3)
+let mouthVector = 3
 let mouthSvg = Rseed.random_int(0, 9)
 let glassType = Rseed.random_int(0, 3)
 let glassSVG = Rseed.random_int(0, 17)
@@ -471,18 +538,37 @@ let sRobotPosX_NORMALIZE = 0;
 let sRobotPosY_NORMALIZE = 0;
 let mouthTop;
 let mouthBottom;
+let mouthLeft;
+let mouthRight;
 let nose;
 let leftEye;
+let leftEyeBottom;
 let rightEye;
+let rightEyeBottom;
 let rightEyeBrow;
 let leftEyeBrow;
 let boxWidth = WIDTH;
 let faceSize = WIDTH;
+let leftEyebrowTemp = 0;
+let rightEyebrowTemp = 0;
+let mouthVerTemp = 0;
+let mouthHorTemp = 0;
+let mouthLeftTemp = 0;
+let mouthRightTemp = 0;
+let leftEyeTemp = 0;
+let rightEyeTemp;
 let facialFeatures = new FacialFeatures({
     leftEyebrowPos: 0,
     rightEyebrowPos: 0, 
     robotSizeMultiply: 1,
-    robotRotation: 0
+    robotRotation: 0,
+    leftEyeMultiply: 1,
+    rightEyeMultiply: 1,
+    mouthVerMulitply: 0,
+    mouthHorMulitply: 0,
+    mouthLeftMultiply: 0,
+    mouthRightMultiply: 0,
+    centerX: 0
 });
 
 function setup() {
@@ -599,18 +685,26 @@ function drawLandmarks(detections){
     for(let i = 0; i < detections.length; i++){
         mouthTop = detections[i].parts.mouth[3];  //20
         mouthBottom = detections[i].parts.mouth[9];  //20
+        mouthLeft = detections[i].parts.mouth[0];  //20
+        mouthRight = detections[i].parts.mouth[6];  //20
         nose = detections[i].parts.nose[3];  //9
         leftEye = detections[i].parts.leftEye[2];  //6
+        leftEyeBottom = detections[i].parts.leftEye[4];  //6
         rightEye = detections[i].parts.rightEye[2];  //6
+        rightEyeBottom = detections[i].parts.rightEye[4];  //6
         rightEyeBrow = detections[i].parts.rightEyeBrow[2];  //5
         leftEyeBrow = detections[i].parts.leftEyeBrow[2];  //5
 
         drawPart(mouthTop);
         drawPart(mouthBottom);
+        drawPart(mouthLeft);
+        drawPart(mouthRight);
         drawPart(nose);
         drawPart(leftEye);
+        drawPart(leftEyeBottom);
         drawPart(leftEyeBrow);
         drawPart(rightEye);
+        drawPart(rightEyeBottom);
         drawPart(rightEyeBrow);
 
     }
@@ -657,10 +751,8 @@ function draw() {
         translate(-WIDTH,0);
         
         image(video, 0, 0, -WIDTH, HEIGHT);
-        if (detections){
-        
+        if (detections){       
             push()
-
                 if (detections) {
                     if (detections.length > 0) {
                         // console.log(detections)
@@ -668,18 +760,36 @@ function draw() {
                         drawLandmarks(detections);
                         smoothedRobotPos = smoothValue(smoothedRobotPos, nose, smoothedPosValue);
                         faceSize = lerp(faceSize, boxWidth, smoothedPosValue);
-                        facialFeatures.robotSizeMultiply = 0.5 + (faceSize / WIDTH);
-                        facialFeatures.leftEyebrowPos = lerp(facialFeatures.leftEyebrowPos, pow((leftEye.y - leftEyeBrow.y) / boxWidth, 2) * WIDTH * 2, 0.6);
-                        facialFeatures.rightEyebrowPos = lerp(facialFeatures.rightEyebrowPos, pow((rightEye.y - rightEyeBrow.y) / boxWidth, 2) * WIDTH * 2, 0.6);
+                        facialFeatures.robotSizeMultiply = 0.5 + (faceSize / WIDTH) * 1.5;
+                        leftEyebrowTemp = map((leftEye.y - leftEyeBrow.y) / boxWidth, 0.1, 0.25, -0.5, 1.5);
+                        facialFeatures.leftEyebrowPos = lerp(facialFeatures.leftEyebrowPos, leftEyebrowTemp, 0.6);
+                        rightEyebrowTemp = map((rightEye.y - rightEyeBrow.y) / boxWidth, 0.1, 0.25, -0.5, 1.5);
+                        facialFeatures.rightEyebrowPos = lerp(facialFeatures.rightEyebrowPos, rightEyebrowTemp, 0.6);
                         facialFeatures.robotRotation = lerp(facialFeatures.robotRotation, atan2(rightEye.y - leftEye.y, rightEye.x - leftEye.x), smoothedPosValue);
+                        mouthVerTemp = map((mouthBottom.y - mouthTop.y) / boxWidth, 0.05, 0.5, -0.5, 1.5);
+                        facialFeatures.mouthVerMulitply = lerp(facialFeatures.mouthVerMulitply, mouthVerTemp, smoothedPosValue);
+                        mouthHorTemp = map((mouthRight.x - mouthLeft.x) / boxWidth, 0.2, 0.45, -0.5, 1.5);
+                        facialFeatures.mouthHorMulitply = lerp(facialFeatures.mouthHorMulitply, mouthHorTemp, smoothedPosValue);
+                        facialFeatures.centerX = lerp(facialFeatures.centerX, (leftEye.x + rightEye.x) / 2, smoothedPosValue);
+                        mouthLeftTemp = map((mouthRight.x - facialFeatures.centerX) / boxWidth, 0.1, 0.25, -0.5, 1.5);           //left right switch
+                        facialFeatures.mouthLeftMultiply = lerp(facialFeatures.mouthLeftMultiply, mouthLeftTemp, smoothedPosValue);
+                        mouthRightTemp = map((facialFeatures.centerX - mouthLeft.x) / boxWidth, 0.1, 0.25, -0.5, 1.5);
+                        facialFeatures.mouthRightMultiply = lerp(facialFeatures.mouthRightMultiply, mouthRightTemp, smoothedPosValue);
+                        
+                        leftEyeTemp = map((leftEyeBottom.y - leftEye.y) / boxWidth, 0.04, 0.065, 0.1, 1, true);     //left right switch
+                        leftEyeTemp = (leftEyeTemp<0.6)?0.1:leftEyeTemp 
+                        facialFeatures.leftEyeMultiply = lerp(facialFeatures.leftEyeMultiply, leftEyeTemp, 0.4);
+                        
+                        rightEyeTemp = map((rightEyeBottom.y - rightEye.y) / boxWidth, 0.04, 0.065, 0.1, 1, true);
+                        // rightEyeTemp = (((rightEyeBottom.y - rightEye.y) / boxWidth)<0.046)?0.1:1
+                        rightEyeTemp = (rightEyeTemp<0.6)?0.1:rightEyeTemp 
+                        facialFeatures.rightEyeMultiply = lerp(facialFeatures.rightEyeMultiply, rightEyeTemp, 0.4);
+                        print((leftEyeBottom.y - leftEye.y) / boxWidth)
                     }
-
                 }
             pop()
             
-
-        }
-        
+        }       
     pop()
 
     sRobotPosX_NORMALIZE = map(smoothedRobotPos.x, 0, WIDTH, 0, 1);
@@ -857,6 +967,15 @@ function smoothValue(smoothedData, data, smoothedValue){
     }
     let sdata = createVector(smoothedx, smoothedy)
     return sdata;
+}
+
+function keyPressed(){
+	if (key == ' '){
+		noLoop()		
+	}
+	if (key == 'c'){
+		loop()
+	}
 }
 </script><style type="text/css">html {
   height: 100%;
