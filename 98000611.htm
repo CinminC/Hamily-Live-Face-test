@@ -189,7 +189,15 @@ class Robot {
         //--------------Face--------------//
         push();
         rectMode(CORNER);
-        rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y + this.addPos * 2, this.corner);
+        if(int(this.mouth) == 0){
+            if(this.mouthVector ==1 || this.mouthVector ==2){
+                rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y + this.addPos * 2, this.corner);
+            }else 
+                rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y, this.corner);
+        }else{
+            rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y, this.corner);
+        }
+        // rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y + this.addPos * 2, this.corner);
         pop();
         noStroke();
 
@@ -261,8 +269,8 @@ class Robot {
                         fill(this.colors[6]);
                         //rect(0, this.size.y / 3, this.size.x / 2, 5 * 4.5, 30);
                         push();
-                        translate(0, this.size.y / 3 + this.addPos);
-                        rotate(this.mouthVerMultiply / 2 * sin(frameCount / 10));
+                        translate(0, this.size.y / 3 + this.addPos / 5);
+                        rotate(this.mouthVerMultiply / 4 * sin(frameCount / 10));
                         rect(0, 0, this.size.x / 2 + this.mouthWide, this.p.x/15 + this.mouthThickness / 5, this.p.x/15 + this.mouthThickness / 5);
                         pop();
                         break;
@@ -290,7 +298,7 @@ class Robot {
                         strokeWeight(this.strokeWeight / 2 + this.mouthThickness / 10);
                         noFill();
                         // arc(0, this.size.y / 2.5, 120, 70 - sin(frameCount / 50) * 10, PI, TWO_PI);
-                        arc(0, this.size.y / 2.5 + this.addPos, this.p.x/4 + this.mouthWide, WIDTH/11.5 - sin(frameCount / 50) * this.p.x/45 + this.mouthThickness, PI, TWO_PI);
+                        arc(0, this.size.y / 2.5 + this.addPos / 100, this.p.x/4 + this.mouthWide, WIDTH/11.5 - sin(frameCount / 50) * this.p.x/45 + this.mouthThickness, PI, TWO_PI);
                         //  arc(0, this.size.y/4, 120-sin(frameCount/50)*30, 80, 0, PI, TWO_PI);
                         pop();
                         break;
@@ -302,21 +310,21 @@ class Robot {
                 strokeWeight(this.strokeWeight / 2 + this.mouthThickness / 10);
                 noFill();      
                 // arc(0, this.size.y / 4, 120 - sin(frameCount / 50) * 30, 80, 0, PI, TWO_PI);
-                arc(0, this.size.y / 4 + this.addPos, this.p.x/4 - sin(frameCount / 50) * this.p.x/15 + this.mouthWide, WIDTH/11 + this.mouthThickness, 0, PI, TWO_PI);
+                arc(0, this.size.y / 4 + this.addPos / 40, this.p.x/4 - sin(frameCount / 50) * this.p.x/15 + this.mouthWide, WIDTH/11 + this.mouthThickness, 0, PI, TWO_PI);
                 pop();
                 break;
             case 2:
                 rotate(sin(frameCount / 10 + mouseX / 50 + mouseY / 50) / 5);
                 fill(this.colors[6]);
                 push();
-                translate(0, this.size.y / 3 + this.addPos);
+                translate(0, this.size.y / 3 + this.addPos / 5);
                 rotate(this.mouthVerMultiply / 2 * sin(frameCount / 10));
                 // rect(0, this.size.y / 3, this.size.x / 4, 5 * 4.5, 30);
                 rect(0, 0, this.size.x / 4 + this.mouthWide, this.p.x / 15 + this.mouthThickness / 5, this.p.x/15 + this.mouthThickness / 5);
                 pop();
                 break;
             case 3:
-                image(this.botLips , -WIDTH/12 - this.mouthWide / 2, WIDTH/10.2, WIDTH/6 + this.mouthWide, WIDTH/16.5 + this.mouthThickness);
+                image(this.botLips , -WIDTH/12 - this.mouthWide / 2, WIDTH/10.2, WIDTH/6 + this.mouthWide, WIDTH/16.5 + this.mouthThickness / 5);
                 // imageMode(CORNERS)
                 // image(this.botLips , -WIDTH/12, WIDTH/10.2, -WIDTH/12 + WIDTH/6 +this.p.x / 5*this.mouthRightMultiply , WIDTH/10.2 + WIDTH/16.5 + this.mouthThickness);
                 // pop()
@@ -690,8 +698,10 @@ function drawLandmarks(detections){
         nose = detections[i].parts.nose[3];  //9
         leftEye = detections[i].parts.leftEye[2];  //6
         leftEyeBottom = detections[i].parts.leftEye[4];  //6
+        // leftEyeR = detections[i].parts.leftEye[3];  //6
         rightEye = detections[i].parts.rightEye[2];  //6
         rightEyeBottom = detections[i].parts.rightEye[4];  //6
+        // rightEyeL = detections[i].parts.rightEye[0];  //6
         rightEyeBrow = detections[i].parts.rightEyeBrow[2];  //5
         leftEyeBrow = detections[i].parts.leftEyeBrow[2];  //5
 
@@ -702,9 +712,11 @@ function drawLandmarks(detections){
         drawPart(nose);
         drawPart(leftEye);
         drawPart(leftEyeBottom);
+        // drawPart(leftEyeR);
         drawPart(leftEyeBrow);
         drawPart(rightEye);
         drawPart(rightEyeBottom);
+        // drawPart(rightEyeL);
         drawPart(rightEyeBrow);
 
     }
@@ -776,15 +788,28 @@ function draw() {
                         mouthRightTemp = map((facialFeatures.centerX - mouthLeft.x) / boxWidth, 0.1, 0.25, -0.5, 1.5);
                         facialFeatures.mouthRightMultiply = lerp(facialFeatures.mouthRightMultiply, mouthRightTemp, smoothedPosValue);
                         
-                        leftEyeTemp = map((leftEyeBottom.y - leftEye.y) / boxWidth, 0.04, 0.065, 0.1, 1, true);     //left right switch
-                        leftEyeTemp = (leftEyeTemp<0.6)?0.1:leftEyeTemp 
-                        facialFeatures.leftEyeMultiply = lerp(facialFeatures.leftEyeMultiply, leftEyeTemp, 0.4);
+                        // leftEyeTemp = map((leftEyeBottom.y - leftEye.y) / boxWidth, 0.04, 0.065, 0.1, 1, true);     //left right switch
+                        // leftEyeTemp = (nose.y - leftEye.y)/(nose.y - leftEyeBottom.y);     //left right switch
+                        // leftEyeTemp = (leftEyeBottom.y - leftEye.y)/(boxWidth*cos(facialFeatures.robotRotation));     //left right switch
+                        // leftEyeTemp = (leftEyeBottom.y - leftEye.y)/(rightEyeL.x-leftEyeR.x)
+                        // leftEyeTemp = (leftEyeTemp<0.235)? 0.1 : 1; 
+                        leftEyeTemp = (leftEyeBottom.y - leftEye.y)/(rightEyeBottom.x-leftEyeBottom.x)
+                        leftEyeTemp = (leftEyeTemp<0.14)? 0.1 : 1;  
+                        facialFeatures.leftEyeMultiply = lerp(facialFeatures.leftEyeMultiply, leftEyeTemp, 0.6);
                         
-                        rightEyeTemp = map((rightEyeBottom.y - rightEye.y) / boxWidth, 0.04, 0.065, 0.1, 1, true);
+                        // rightEyeTemp = (nose.y - rightEye.y)/(nose.y - rightEyeBottom.y);
                         // rightEyeTemp = (((rightEyeBottom.y - rightEye.y) / boxWidth)<0.046)?0.1:1
-                        rightEyeTemp = (rightEyeTemp<0.6)?0.1:rightEyeTemp 
-                        facialFeatures.rightEyeMultiply = lerp(facialFeatures.rightEyeMultiply, rightEyeTemp, 0.4);
-                        print((leftEyeBottom.y - leftEye.y) / boxWidth)
+                        // rightEyeTemp = (rightEyeTemp<1.18)? 0.1 : 1;
+                        // rightEyeTemp = (rightEyeBottom.y - rightEye.y)/(boxWidth*cos(facialFeatures.robotRotation));     
+                        // rightEyeTemp = (rightEyeTemp<0.055)? 0.1 : 1; 
+                        // rightEyeTemp = (rightEyeBottom.y - rightEye.y)/(rightEyeL.x-leftEyeR.x)
+                        // rightEyeTemp = (rightEyeTemp<0.235)? 0.1 : 1;
+                        rightEyeTemp = (rightEyeBottom.y - rightEye.y)/(rightEyeBottom.x-leftEyeBottom.x)
+                        rightEyeTemp = (rightEyeTemp<0.145)? 0.1 : 1; 
+                        
+                        facialFeatures.rightEyeMultiply = lerp(facialFeatures.rightEyeMultiply, rightEyeTemp, 0.6);
+                        // print((leftEyeBottom.y - leftEye.y)/(boxWidth*cos(facialFeatures.robotRotation)) )
+                        print( (leftEyeBottom.y - leftEye.y)/(rightEyeBottom.x-leftEyeBottom.x),(rightEyeBottom.y - rightEye.y)/(rightEyeBottom.x-leftEyeBottom.x))
                     }
                 }
             pop()
