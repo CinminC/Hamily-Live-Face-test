@@ -3,6 +3,9 @@
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><script src="./98000611_files/p5.min.js.下載"></script><script>let tokenData = {"tokenId":"98000611","hash":"0xf16d106f33b425762458f3596e9dcc66f726ff438e72a8eeaf055e1a1ee8233e"}</script>
 <script src="https://unpkg.com/ml5@0.1.1/dist/ml5.min.js" type="text/javascript"></script>
 <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js" type="text/javascript"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <script>
 class Random {
     constructor(seed) {
@@ -155,7 +158,7 @@ class Robot {
         this.botLips = loadImage("data:image/svg+xml;base64," + btoa(allLips[def.mouthSvg]))
     }
 
-    draw(canvas) {
+    draw(canvas, glassesCanvas) {
         canvas.push();
         canvas.noStroke();
         canvas.translate(WIDTH/2, this.p.y);
@@ -332,66 +335,71 @@ class Robot {
         }
         canvas.pop();
 
-        canvas.push();
+        //--------------Glasses--------------//    
+        glassesCanvas.push();
+        glassesCanvas.translate(WIDTH/2, this.p.y);
+        glassesCanvas.rotate(-this.robotRotation);
+        glassesCanvas.rectMode(CENTER);
+        glassesCanvas.noStroke();
         switch (int(this.glassType)) {
             case 0:
                 switch (this.glassVector) {
                     case 0:
-                        canvas.rotate(-sin(frameCount / 10 + mouseX / 50 + mouseY / 50) / 10);
-                        canvas.stroke(this.colors[9]);
-                        canvas.strokeWeight(this.glassStrokeWeight);
-                        canvas.fill(123, 44, 191, 100);
+                        glassesCanvas.rotate(-sin(frameCount / 10 + mouseX / 50 + mouseY / 50) / 10);
+                        glassesCanvas.stroke(this.colors[9]);
+                        glassesCanvas.strokeWeight(this.glassStrokeWeight);
+                        glassesCanvas.fill(123, 44, 191, 100);
                         //rect(-81, 0, this.glassSize.x, this.glassSize.y, this.corner);
-                        canvas.rect(-WIDTH/10.9, 0, this.glassSize.x, this.glassSize.y, this.corner);
-                        canvas.rect(WIDTH/10.9, 0, this.glassSize.x, this.glassSize.y, this.corner);
-                        canvas.fill(this.colors[9]);
-                        canvas.noStroke();
+                        glassesCanvas.rect(-WIDTH/10.9, 0, this.glassSize.x, this.glassSize.y, this.corner);
+                        glassesCanvas.rect(WIDTH/10.9, 0, this.glassSize.x, this.glassSize.y, this.corner);
+                        glassesCanvas.fill(this.colors[9]);
+                        glassesCanvas.noStroke();
                         //rect(0, 0, 60, 15, this.corner);
-                        canvas.rect(0, 0, this.p.x/7.5, this.p.x/30, this.corner);
+                        glassesCanvas.rect(0, 0, this.p.x/7.5, this.p.x/30, this.corner);
                         break;
                     case 1:
-                        canvas.rotate(-sin(frameCount / 10 + mouseX / 50 + mouseY / 50) / 10);
-                        canvas.stroke(this.colors[9]);
-                        canvas.fill(123, 44, 191, 100);
+                        glassesCanvas.rotate(-sin(frameCount / 10 + mouseX / 50 + mouseY / 50) / 10);
+                        glassesCanvas.stroke(this.colors[9]);
+                        glassesCanvas.fill(123, 44, 191, 100);
                         //circle(-81, 0, 100);
-                        canvas.circle(-WIDTH/10.9, 0, WIDTH/9);
+                        glassesCanvas.circle(-WIDTH/10.9, 0, WIDTH/9);
                         //circle(81, 0, 100);
-                        canvas.circle(WIDTH/10.9, 0, WIDTH/9);
-                        canvas.fill(this.colors[9]);
-                        canvas.noStroke();
+                        glassesCanvas.circle(WIDTH/10.9, 0, WIDTH/9);
+                        glassesCanvas.fill(this.colors[9]);
+                        glassesCanvas.noStroke();
                         //rect(0, 0, 60, 15, this.corner);
-                        canvas.rect(0, 0, this.p.x/7.5, this.p.x/30, this.corner);
+                        glassesCanvas.rect(0, 0, this.p.x/7.5, this.p.x/30, this.corner);
                         break;
                 }
                 break
             case 1:
                 break;
             case 2:
-                canvas.rotate(-sin(frameCount / 10 + mouseX / 50 + mouseY / 50) / 10);
-                canvas.stroke(this.colors[9]);
-                canvas.strokeWeight(this.glassStrokeWeight);
-                canvas.fill(123, 44, 191, 100);
+                glassesCanvas.rotate(-sin(frameCount / 10 + mouseX / 50 + mouseY / 50) / 10);
+                glassesCanvas.stroke(this.colors[9]);
+                glassesCanvas.strokeWeight(this.glassStrokeWeight);
+                glassesCanvas.fill(123, 44, 191, 100);
                 //rect(-81, 0, this.glassSizeCrazy.x, this.glassSizeCrazy.y, this.corner);
-                canvas.rect(-WIDTH/10.9, 0, this.glassSizeCrazy.x, this.glassSizeCrazy.y, this.corner);
+                glassesCanvas.rect(-WIDTH/10.9, 0, this.glassSizeCrazy.x, this.glassSizeCrazy.y, this.corner);
                 //rect(81, 0, this.glassSizeCrazy.x, this.glassSizeCrazy.y, this.corner);
-                canvas.rect(WIDTH/10.9, 0, this.glassSizeCrazy.x, this.glassSizeCrazy.y, this.corner);
-                canvas.fill(this.colors[9]);
-                canvas.noStroke();
+                glassesCanvas.rect(WIDTH/10.9, 0, this.glassSizeCrazy.x, this.glassSizeCrazy.y, this.corner);
+                glassesCanvas.fill(this.colors[9]);
+                glassesCanvas.noStroke();
                 //rect(0, 0, 60, 15, this.corner);
-                canvas.rect(0, 0, this.p.x/7.5, this.p.x/30, this.corner);
+                glassesCanvas.rect(0, 0, this.p.x/7.5, this.p.x/30, this.corner);
                 break;
             case 3:
-                canvas.rotate(-sin(frameCount / 10 + mouseX / 50 + mouseY / 50) / 10);
+                glassesCanvas.rotate(-sin(frameCount / 10 + mouseX / 50 + mouseY / 50) / 10);
                 if(this.glassSVG === 17) {
-                    canvas.image(this.botGlasses, -WIDTH/6, -WIDTH/24, WIDTH/3, WIDTH/8);
+                    glassesCanvas.image(this.botGlasses, -WIDTH/6, -WIDTH/24, WIDTH/3, WIDTH/8);
                 } else {
-                    canvas.image(this.botGlasses, -WIDTH/6, -WIDTH/24, WIDTH/3, WIDTH/10);
+                    glassesCanvas.image(this.botGlasses, -WIDTH/6, -WIDTH/24, WIDTH/3, WIDTH/10);
                 }
                 break;
             default:
                 break;
         }
-        canvas.pop();
+        glassesCanvas.pop();
         canvas.pop();
     }
 
@@ -415,7 +423,7 @@ class Robot {
         
         //-----press 'g' to switch face style-----//
         if(switchRobot){
-            seed = random(10000000+frameCount);  
+            seed = random(10000000+frameCount);  //temporary
             Rseed = new Random(seed);
             selectedPlanet = Rseed.random_int(0, 5);
             pitircik = Rseed.random_choice(availableNoiseLevels);
@@ -520,9 +528,14 @@ let poseNet;
 let pose;
 let faceapi;
 let detections;
+let isModelLoaded = false;
+let loaded = 0;
 
 let faceCanvas; 
+let glassesCanvas;
 let webGlGraphics;
+
+let switchRobotBtn, showCaptureBtn, showHintBtn, waveModeBtn, liveModeBtn, alphaModeBtn, pauseBtn;
 
 function preload() {
     const loadablePlanets = [
@@ -647,6 +660,8 @@ function setup() {
     webGlGraphics = createGraphics(width * 2,height * 2,WEBGL);
 	faceCanvas =  createGraphics(width,height);
     faceCanvas.pixelDensity(2);
+	glassesCanvas =  createGraphics(width,height);
+    glassesCanvas.pixelDensity(2);
     rect(100 * M, 500 * M, 50 * M, 50 * M);
 
     smooth(8);
@@ -668,8 +683,7 @@ function setup() {
         let d = noise(0.01 * x, 0.01 * y) * 0.5 + 1;
         noiseImg.ellipse(x, y, d / 1.75, d / 1.75);
     }
-
-
+ 
     ellipseMode(CENTER);
 
     seedNum = int(Rseed.random_between(0, 10000));
@@ -712,9 +726,56 @@ function setup() {
     c2 = color(255, 209, 102);
     c3 = color(128, 255, 219);
 
+    let btnPosBase = window.innerWidth/2 - WIDTH/2 + WIDTH /40*1.5;
+    showCaptureBtn = createImg('img/Capture.png');
+	showCaptureBtn.size(WIDTH/20, WIDTH/20)
+    showCaptureBtn.style("opacity","0.85")
+	showCaptureBtn.position(btnPosBase, HEIGHT - WIDTH/13)
+    showCaptureBtn.mouseOver(() =>showCaptureBtn.style("opacity", "1"));
+    showCaptureBtn.mouseOut(() =>showCaptureBtn.style("opacity", "0.85"));
+    showCaptureBtn.mousePressed(setShowCapture)
+
+    switchRobotBtn = createImg('img/Switch Face.png');
+	switchRobotBtn.size(WIDTH/20, WIDTH/20)
+    switchRobotBtn.style("opacity","0.85")
+	switchRobotBtn.position(btnPosBase  + WIDTH/9, HEIGHT - WIDTH/13)
+    switchRobotBtn.mouseOver(() =>switchRobotBtn.style("opacity", "1"));
+    switchRobotBtn.mouseOut(() =>switchRobotBtn.style("opacity", "0.85"));
+    switchRobotBtn.mousePressed(setSwitchRobot)
+
+    waveModeBtn = createImg('img/Wave.png');
+	waveModeBtn.size(WIDTH/20, WIDTH/20)
+    waveModeBtn.style("opacity","0.85")
+	waveModeBtn.position(btnPosBase  + WIDTH/9*2, HEIGHT - WIDTH/13)
+    waveModeBtn.mouseOver(() =>waveModeBtn.style("opacity", "1"));
+    waveModeBtn.mouseOut(() =>waveModeBtn.style("opacity", "0.85"));
+    waveModeBtn.mousePressed(setBgMode1)
+
+    liveModeBtn = createImg('img/Live.png');
+	liveModeBtn.size(WIDTH/20, WIDTH/20)
+    liveModeBtn.style("opacity","0.85")
+	liveModeBtn.position(btnPosBase  + WIDTH/9*2.8, HEIGHT - WIDTH/13)
+    liveModeBtn.mouseOver(() =>liveModeBtn.style("opacity", "1"));
+    liveModeBtn.mouseOut(() =>liveModeBtn.style("opacity", "0.85"));
+    liveModeBtn.mousePressed(setBgMode2)
+
+    alphaModeBtn = createImg('img/Alpha.png');
+	alphaModeBtn.size(WIDTH/20, WIDTH/20)
+    alphaModeBtn.style("opacity","0.85")   
+	alphaModeBtn.position(btnPosBase  + WIDTH/9*3.6, HEIGHT - WIDTH/13)
+    alphaModeBtn.mouseOver(() =>alphaModeBtn.style("opacity", "1"));
+    alphaModeBtn.mouseOut(() =>alphaModeBtn.style("opacity", "0.85"));
+    alphaModeBtn.mousePressed(setBgMode3)
+
+
+
+    // pauseBtn =createButton("Pause/Continue")
+	// pauseBtn.mousePressed(setLoop)
+	// pauseBtn.position(1500,410)
 }
 
 function modelReady() {
+    isModelLoaded = true;
     console.log('ready!')
     console.log(faceapi)
     faceapi.detect(gotResults)
@@ -800,6 +861,43 @@ function drawPart(feature){
         point(-WIDTH+x, y);   
 }
 
+
+function setSwitchRobot(){
+    switchRobot = true;
+}
+
+function setBgMode1(){
+    bgMode = 1;
+}
+
+function setBgMode2(){
+    bgMode = 2;
+}
+
+function setBgMode3(){
+    bgMode = 3;
+}
+
+function setShowCapture(){
+    showCapture = !showCapture;
+}
+
+function setLoop(){
+    controlLoop = !controlLoop;
+    if(controlLoop){
+        loop();
+    }else{
+        noLoop();
+    }
+}
+
+// function btnHover(btn) {
+// clear();
+// showCaptureBtn.style(
+// 		"background-color: lightgreen"
+// 	);
+
+// }
 
 function draw() {
     randomSeed(seedNum);
@@ -903,6 +1001,7 @@ function draw() {
                     smoothedRobotPos = smoothValue(smoothedRobotPos, nose, smoothedPosValue);
                     faceSize = lerp(faceSize, boxWidth, smoothedPosValue);
                     facialFeatures.robotSizeMultiply = (faceSize / WIDTH) * 4.5;
+                    // facialFeatures.robotSizeMultiply = 0.5 + (faceSize / WIDTH) * 1.5;
                     leftEyebrowTemp = map((leftEye.y - leftEyeBrow.y) / boxWidth, 0.1, 0.25, -0.5, 1.5);
                     facialFeatures.leftEyebrowPos = lerp(facialFeatures.leftEyebrowPos, leftEyebrowTemp, 0.3);
                     rightEyebrowTemp = map((rightEye.y - rightEyeBrow.y) / boxWidth, 0.1, 0.25, -0.5, 1.5);
@@ -953,9 +1052,8 @@ function draw() {
 
     sRobotPosX_NORMALIZE = map(smoothedRobotPos.x, 0, WIDTH, 0, 1);
     sRobotPosY_NORMALIZE = map(smoothedRobotPos.y, 0, HEIGHT, 0, 1);
-
     robot.update(smoothedRobotPos, facialFeatures);
-    robot.draw(faceCanvas);
+    robot.draw(faceCanvas, glassesCanvas);
 
     //-----tilt-----//
     webGlGraphics.push();
@@ -964,34 +1062,87 @@ function draw() {
 	webGlGraphics.rotateY(robotRotationY);
 	webGlGraphics.imageMode(CENTER);
     webGlGraphics.scale(facialFeatures.robotSizeMultiply);  //scale robot
-    // webGlGraphics.scale(2)
 	webGlGraphics.image(faceCanvas,0,0);
+    webGlGraphics.translate(0, 0, 40);
+	webGlGraphics.image(glassesCanvas,0,0);
 	webGlGraphics.pop();
     push()
     imageMode(CENTER)
     image(webGlGraphics,smoothedRobotPos.x, height/2);
     pop()
     faceCanvas.clear();
-
+    glassesCanvas.clear();
     //-----Hint-----//
-    if(showHint){
+    textFont('Roboto');
+    if(showCapture){
     push();
     fill(250)
     textSize(20);
     text("Face", 10, 20);
     text("posX: "+floor(smoothedRobotPos.x), 10, 50);
     text("posY: "+floor(smoothedRobotPos.y), 10, 80);
-    push()
-    textSize(15);
-    textAlign(RIGHT);
-    text("Generate a new robot: Press 'G'", width-30, 30);
-    text("Show or close the captured window: Press 'C'", width-30, 55);
-    text("Switch background mode: Press '1/2/3'", width-30, 80);
-    text("Pause or continue: Press Space", width-30, 105);
-    text("Show or close the hint: Press 'H'", width-30, 130);
-    pop()
-    pop();
+    // push()
+    // textSize(15);
+    // textAlign(RIGHT);
+    // text("Generate a new robot: Press 'G'", width-30, 30);
+    // text("Show or close the captured window: Press 'C'", width-30, 55);
+    // text("Switch background mode: Press '1/2/3'", width-30, 80);
+    // text("Pause or continue: Press Space", width-30, 105);
+    // text("Show or close the hint: Press 'H'", width-30, 130);
+    // pop()
+ 
     } 
+
+    //-----Load Model Hint-----// 
+    if(!isModelLoaded){
+        push()
+        translate(WIDTH/2,HEIGHT/2)
+        fill(37,37,37)
+        rectMode(CENTER)
+        rect(0,0,WIDTH/2,WIDTH/10)
+        fill(255)
+        textFont('Roboto');
+        textStyle(BOLD);
+        textSize(20);
+        textAlign(CENTER, CENTER);
+        text("Loading Face Tracking Model ...",0,0)
+        pop()
+    }
+    if(isModelLoaded && loaded<20){
+        push()
+        translate(WIDTH/2,HEIGHT/2)
+        fill(142, 240, 101)
+        rectMode(CENTER)
+        rect(0,0,WIDTH/3,WIDTH/10)
+        fill(255)
+        textFont('Roboto');
+        textStyle(BOLD);
+        textSize(24);
+        textAlign(CENTER, CENTER);
+        text("Loaded!",0,0)
+        pop()
+        loaded ++;
+    }
+
+    //-----UI-----//
+    push()
+    fill(37,37,37,200)
+    rect(0,HEIGHT-WIDTH/10.5,WIDTH/2 + WIDTH/50, WIDTH/10)
+    textSize(12);
+    textAlign(CENTER);
+    fill(255)
+    let textPosBase = WIDTH /40*2.5;
+    text("Show/Close", textPosBase, HEIGHT - WIDTH/100);
+    text("Random", textPosBase + WIDTH/9, HEIGHT - WIDTH/100);
+    text("Sea", textPosBase + WIDTH/9 * 2, HEIGHT - WIDTH/100);
+    text("Live", textPosBase + WIDTH/9 * 2.8, HEIGHT - WIDTH/100);
+    text("Alpha", textPosBase + WIDTH/9 * 3.6, HEIGHT - WIDTH/100);
+    stroke(255)
+    strokeWeight(0.8)
+    line(textPosBase + WIDTH/18, HEIGHT - WIDTH/13, textPosBase + WIDTH/18, HEIGHT - WIDTH/100)
+    line(textPosBase + WIDTH/6, HEIGHT - WIDTH/13, textPosBase + WIDTH/6, HEIGHT - WIDTH/100)
+    pop()
+
 
     push();
     blendMode(MULTIPLY);
@@ -1110,24 +1261,24 @@ function keyPressed(){
             noLoop();
         }		
 	}
-    if (key == 'g'){
-        switchRobot = true;
-    }
-    if (key == 'c'){
-        showCapture = !showCapture;
-    }
-    if (key == 'h'){
-        showHint = !showHint;
-    }
-    if (key == '1'){
-        bgMode = 1;
-    }
-    if (key == '2'){
-        bgMode = 2;
-    }
-    if (key == '3'){
-        bgMode = 3;
-    }
+    // if (key == 'g'){
+    //     switchRobot = true;
+    // }
+    // if (key == 'c'){
+    //     showCapture = !showCapture;
+    // }
+    // if (key == 'h'){
+    //     showHint = !showHint;
+    // }
+    // if (key == '1'){
+    //     bgMode = 1;
+    // }
+    // if (key == '2'){
+    //     bgMode = 2;
+    // }
+    // if (key == '3'){
+    //     bgMode = 3;
+    // }
     return false;
 }
 </script><style type="text/css">html {
