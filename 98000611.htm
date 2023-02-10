@@ -198,8 +198,7 @@ class Robot {
             }else 
             canvas.rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y, this.corner);
         }else{
-            canvas.rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y, this.corner);
-        }
+            canvas.rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y, this.corner);                                                    }
         // rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y + this.addPos * 2, this.corner);
         canvas.pop();
         canvas.noStroke();
@@ -420,10 +419,8 @@ class Robot {
         this.addPos = (this.mouthVerMultiply > 0) ? this.mouthVerMultiply *50 : 0;
         this.mouthThickness = this.p.x / 5 * this.mouthVerMultiply;
         this.mouthWide = this.p.x / 5 * this.mouthHorMultiply;
-        
         //-----press 'g' to switch face style-----//
         if(switchRobot){
-            seed = random(10000000+frameCount);  //temporary
             Rseed = new Random(seed);
             selectedPlanet = Rseed.random_int(0, 5);
             pitircik = Rseed.random_choice(availableNoiseLevels);
@@ -529,13 +526,15 @@ let pose;
 let faceapi;
 let detections;
 let isModelLoaded = false;
-let loaded = 0;
+let loadedCount = 0;
 
 let faceCanvas; 
 let glassesCanvas;
 let webGlGraphics;
 
 let switchRobotBtn, showCaptureBtn, showHintBtn, waveModeBtn, liveModeBtn, alphaModeBtn, pauseBtn;
+let hashInput;
+let hashBtn;
 
 function preload() {
     const loadablePlanets = [
@@ -767,6 +766,19 @@ function setup() {
     alphaModeBtn.mouseOut(() =>alphaModeBtn.style("opacity", "0.85"));
     alphaModeBtn.mousePressed(setBgMode3)
 
+    hashInput = createInput().attribute('placeholder', 'Enter the hash of your HAM');
+	hashInput.position(window.innerWidth/2 + WIDTH/16, HEIGHT - WIDTH/15);
+    hashInput.size(WIDTH/3.5, WIDTH/20);
+
+    hashBtn = createButton('Generate!');
+	hashBtn.size(WIDTH/8, WIDTH/20)
+    hashBtn.style("background","#252525")   
+    hashBtn.style("color","#ffffff")   
+    hashBtn.style("border","none")   
+	hashBtn.position(window.innerWidth/2 + WIDTH/16 + WIDTH/3.5, HEIGHT - WIDTH/15)
+    hashBtn.mouseOver(() =>hashBtn.style("background","#353535"));
+    hashBtn.mouseOut(() =>hashBtn.style("background","#252525"));
+    hashBtn.mousePressed(hashRobotGenerate)
 
 
     // pauseBtn =createButton("Pause/Continue")
@@ -863,6 +875,7 @@ function drawPart(feature){
 
 
 function setSwitchRobot(){
+    seed = random(10000000+frameCount);  //temporary
     switchRobot = true;
 }
 
@@ -891,13 +904,14 @@ function setLoop(){
     }
 }
 
-// function btnHover(btn) {
-// clear();
-// showCaptureBtn.style(
-// 		"background-color: lightgreen"
-// 	);
+function hashRobotGenerate(){
+    if(hashInput.value()!=''){
+        seed = hashInput.value() ////67955386739831850
+        switchRobot = true;
+    }
+    
+}
 
-// }
 
 function draw() {
     randomSeed(seedNum);
@@ -1108,7 +1122,7 @@ function draw() {
         text("Loading Face Tracking Model ...",0,0)
         pop()
     }
-    if(isModelLoaded && loaded<20){
+    if(isModelLoaded && loadedCount<20){
         push()
         translate(WIDTH/2,HEIGHT/2)
         fill(142, 240, 101)
@@ -1121,7 +1135,7 @@ function draw() {
         textAlign(CENTER, CENTER);
         text("Loaded!",0,0)
         pop()
-        loaded ++;
+        loadedCount ++;
     }
 
     //-----UI-----//
@@ -1143,7 +1157,7 @@ function draw() {
     line(textPosBase + WIDTH/6, HEIGHT - WIDTH/13, textPosBase + WIDTH/6, HEIGHT - WIDTH/100)
     pop()
 
-
+    print( window.innerWidth/2)
     push();
     blendMode(MULTIPLY);
     image(overAllTexture, 0, 0);
@@ -1261,6 +1275,9 @@ function keyPressed(){
             noLoop();
         }		
 	}
+    if(key == 'Enter'){
+        hashRobotGenerate();
+    }
     // if (key == 'g'){
     //     switchRobot = true;
     // }
@@ -1279,7 +1296,7 @@ function keyPressed(){
     // if (key == '3'){
     //     bgMode = 3;
     // }
-    return false;
+    // return false;
 }
 </script><style type="text/css">html {
   height: 100%;
@@ -1288,6 +1305,7 @@ body {
   min-height: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 canvas {
   padding: 0;
