@@ -198,7 +198,8 @@ class Robot {
             }else 
             canvas.rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y, this.corner);
         }else{
-            canvas.rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y, this.corner);                                                    }
+            canvas.rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y, this.corner);  
+        }
         // rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y + this.addPos * 2, this.corner);
         canvas.pop();
         canvas.noStroke();
@@ -486,6 +487,7 @@ class FacialFeatures {
     this.centerX = args.centerX;
   }
 }
+
 let seed = parseInt(tokenData.hash.slice(0, 16), 16);
 let Rseed = new Random(seed);
 var WIDTH = Math.min(window.innerWidth,window.innerHeight)
@@ -530,7 +532,7 @@ let loadedCount = 0;
 
 let faceCanvas; 
 let glassesCanvas;
-let webGlGraphics;
+let webGlGraphics, webGlGraphics2;
 
 let switchRobotBtn, showCaptureBtn, showHintBtn, waveModeBtn, liveModeBtn, alphaModeBtn, pauseBtn;
 let hashInput;
@@ -657,6 +659,7 @@ let facialFeatures = new FacialFeatures({
 function setup() {
     createCanvas(WIDTH, HEIGHT);
     webGlGraphics = createGraphics(width * 2,height * 2,WEBGL);
+    webGlGraphics2 = createGraphics(width * 2,height * 2,WEBGL);
 	faceCanvas =  createGraphics(width,height);
     faceCanvas.pixelDensity(2);
 	glassesCanvas =  createGraphics(width,height);
@@ -912,7 +915,6 @@ function hashRobotGenerate(){
     
 }
 
-
 function draw() {
     randomSeed(seedNum);
     clear(); 
@@ -1078,14 +1080,28 @@ function draw() {
     webGlGraphics.scale(facialFeatures.robotSizeMultiply);  //scale robot
 	webGlGraphics.image(faceCanvas,0,0);
     webGlGraphics.translate(0, 0, 40);
-	webGlGraphics.image(glassesCanvas,0,0);
+	// webGlGraphics.image(glassesCanvas,0,0);
 	webGlGraphics.pop();
+
+    webGlGraphics2.push();
+	webGlGraphics2.clear();
+	// webGlGraphics2.translate(width/2,height/2)
+	webGlGraphics2.rotateY(robotRotationY);
+	webGlGraphics2.imageMode(CENTER);
+    webGlGraphics2.scale(facialFeatures.robotSizeMultiply);  //scale robot
+    webGlGraphics2.translate(0, 0, 40);
+	webGlGraphics2.image(glassesCanvas,0,0);
+	webGlGraphics2.image(glassesCanvas,0,0);
+	webGlGraphics2.image(glassesCanvas,0,0);
+	webGlGraphics2.pop();
     push()
     imageMode(CENTER)
     image(webGlGraphics,smoothedRobotPos.x, height/2);
+    image(webGlGraphics2,smoothedRobotPos.x, height/2);
     pop()
     faceCanvas.clear();
     glassesCanvas.clear();
+
     //-----Hint-----//
     textFont('Roboto');
     if(showCapture){
