@@ -688,6 +688,8 @@ let facialFeatures = new FacialFeatures({
     mouthRightMultiply: 0,
     centerX: 0
 });
+let btnPosBase
+let btnList = []
 
 function setup() {
     createCanvas(WIDTH, HEIGHT);
@@ -761,7 +763,9 @@ function setup() {
     c2 = color(255, 209, 102);
     c3 = color(128, 255, 219);
 
-    let btnPosBase = window.innerWidth/2 - WIDTH/2 + WIDTH /40*1.5;
+    btnPosBase = document.documentElement.clientWidth/2 - WIDTH/2 + WIDTH /40*1.5;
+
+    console.log([document.documentElement.clientWidth/2, WIDTH/2, WIDTH /40*1.5])
     showCaptureBtn = createImg('img/Capture.png');
 	showCaptureBtn.size(WIDTH/20, WIDTH/20)
     showCaptureBtn.style("opacity","0.85")
@@ -803,7 +807,8 @@ function setup() {
     alphaModeBtn.mousePressed(setBgMode3)
 
     hashInput = createInput().attribute('placeholder', 'Enter the hash of your HAM');
-	hashInput.position(window.innerWidth/2 + WIDTH/16, HEIGHT - WIDTH/15);
+    hashInput.style('font-size', HEIGHT*0.02);
+	hashInput.position(document.documentElement.clientWidth/2 + WIDTH/16, HEIGHT - WIDTH/15);
     hashInput.size(WIDTH/3.5, WIDTH/20);
 
     hashBtn = createButton('Generate!');
@@ -811,11 +816,19 @@ function setup() {
     hashBtn.style("background","#252525")   
     hashBtn.style("color","#ffffff")   
     hashBtn.style("border","none")   
-	hashBtn.position(window.innerWidth/2 + WIDTH/16 + WIDTH/3.5, HEIGHT - WIDTH/15)
+    hashBtn.style('font-size', HEIGHT*0.02);
+	hashBtn.position(document.documentElement.clientWidth/2 + WIDTH/16 + WIDTH/3.5, HEIGHT - WIDTH/15)
     hashBtn.mouseOver(() =>hashBtn.style("background","#353535"));
     hashBtn.mouseOut(() =>hashBtn.style("background","#252525"));
     hashBtn.mousePressed(hashRobotGenerate)
 
+    btnList.push(showCaptureBtn)
+    btnList.push(switchRobotBtn)
+    btnList.push(showHintBtn)
+    btnList.push(waveModeBtn)
+    btnList.push(liveModeBtn)
+    btnList.push(alphaModeBtn)
+    btnList.push(alphaModeBtn)
 
     // pauseBtn =createButton("Pause/Continue")
 	// pauseBtn.mousePressed(setLoop)
@@ -965,6 +978,7 @@ function draw() {
     randomSeed(seedNum);
     clear(); 
     noStroke();
+    video.size(width, height);
     //------poseNet------//
     // push()
     //     imageMode(CORNER);
@@ -1166,8 +1180,29 @@ function draw() {
     // text("Pause or continue: Press Space", width-30, 105);
     // text("Show or close the hint: Press 'H'", width-30, 130);
     // pop()
- 
-    } 
+
+    
+} 
+    // button position
+    let reHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT/12
+    showCaptureBtn.position(btnPosBase, reHeight)
+    switchRobotBtn.position(btnPosBase + WIDTH/9, reHeight)
+    waveModeBtn.position(btnPosBase + WIDTH/9*2, reHeight)
+    liveModeBtn.position(btnPosBase + WIDTH/9*2.8, reHeight)
+    alphaModeBtn.position(btnPosBase + WIDTH/9*3.6, reHeight)
+    hashInput.position(document.documentElement.clientWidth/2 + WIDTH/16, reHeight + HEIGHT*0.01);
+    hashBtn.position(document.documentElement.clientWidth/2 + WIDTH/16 + WIDTH/3.5, reHeight + HEIGHT*0.01)
+    // button size
+    
+    showCaptureBtn.size(WIDTH/20, WIDTH/20)
+    switchRobotBtn.size(WIDTH/20, WIDTH/20)
+    waveModeBtn.size(WIDTH/20, WIDTH/20)
+    liveModeBtn.size(WIDTH/20, WIDTH/20)
+    alphaModeBtn.size(WIDTH/20, WIDTH/20)
+    hashInput.size(WIDTH/3.5, WIDTH/20)
+    hashBtn.size(WIDTH/8, WIDTH/20)
+    hashInput.style('font-size', HEIGHT*0.02);
+    hashBtn.style('font-size', HEIGHT*0.02);
 
     //-----Load Model Hint-----// 
     if(!isModelLoaded){
@@ -1203,8 +1238,12 @@ function draw() {
     //-----UI-----//
     push()
     fill(37,37,37,200)
+    // if(document.body.clientWidth < 450){
+    //     rect(0,HEIGHT-WIDTH/8.5,WIDTH, WIDTH/10)
+    // }else{
+    // }
     rect(0,HEIGHT-WIDTH/10.5,WIDTH/2 + WIDTH/50, WIDTH/10)
-    textSize(12);
+    textSize(HEIGHT*0.02);
     textAlign(CENTER);
     fill(255)
     let textPosBase = WIDTH /40*2.5;
@@ -1358,6 +1397,19 @@ function keyPressed(){
     //     bgMode = 3;
     // }
     // return false;
+}
+function windowResized() {
+    WIDTH = Math.min(window.innerWidth,window.innerHeight)
+    HEIGHT = Math.min(window.innerWidth,window.innerHeight)
+    resizeCanvas(WIDTH, HEIGHT);
+    availableNoiseLevels = [WIDTH / 25, WIDTH / 9, WIDTH / 5]
+    DIM = Math.min(WIDTH, HEIGHT);
+    boxWidth = WIDTH;
+    faceSize = WIDTH;
+    M = DIM / DEFAULT_SIZE;
+    ellipse1$ = HEIGHT / 5 + HEIGHT / 30
+    ellipse2$ = HEIGHT / 5 + HEIGHT / 15
+    btnPosBase =document.documentElement.clientWidth/2 - WIDTH/2 + WIDTH /40*1.5;
 }
 </script><style type="text/css">html {
   height: 100%;
