@@ -689,7 +689,6 @@ let facialFeatures = new FacialFeatures({
     centerX: 0
 });
 let btnPosBase
-let btnList = []
 
 function setup() {
     createCanvas(WIDTH, HEIGHT);
@@ -821,15 +820,6 @@ function setup() {
     hashBtn.mouseOver(() =>hashBtn.style("background","#353535"));
     hashBtn.mouseOut(() =>hashBtn.style("background","#252525"));
     hashBtn.mousePressed(hashRobotGenerate)
-
-    btnList.push(showCaptureBtn)
-    btnList.push(switchRobotBtn)
-    btnList.push(showHintBtn)
-    btnList.push(waveModeBtn)
-    btnList.push(liveModeBtn)
-    btnList.push(alphaModeBtn)
-    btnList.push(alphaModeBtn)
-
     // pauseBtn =createButton("Pause/Continue")
 	// pauseBtn.mousePressed(setLoop)
 	// pauseBtn.position(1500,410)
@@ -1167,10 +1157,10 @@ function draw() {
     if(showCapture){
     push();
     fill(250)
-    textSize(20);
-    text("Face", 10, 20);
-    text("posX: "+floor(smoothedRobotPos.x), 10, 50);
-    text("posY: "+floor(smoothedRobotPos.y), 10, 80);
+    textSize(HEIGHT * 0.03);
+    text("Face", 10, HEIGHT * 0.03);
+    text("posX: "+floor(smoothedRobotPos.x), 10, HEIGHT * 0.07);
+    text("posY: "+floor(smoothedRobotPos.y), 10, HEIGHT * 0.11);
     // push()
     // textSize(15);
     // textAlign(RIGHT);
@@ -1184,25 +1174,48 @@ function draw() {
     
 } 
     // button position
-    let reHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT/12
-    showCaptureBtn.position(btnPosBase, reHeight)
-    switchRobotBtn.position(btnPosBase + WIDTH/9, reHeight)
-    waveModeBtn.position(btnPosBase + WIDTH/9*2, reHeight)
-    liveModeBtn.position(btnPosBase + WIDTH/9*2.8, reHeight)
-    alphaModeBtn.position(btnPosBase + WIDTH/9*3.6, reHeight)
-    hashInput.position(document.documentElement.clientWidth/2 + WIDTH/16, reHeight + HEIGHT*0.01);
-    hashBtn.position(document.documentElement.clientWidth/2 + WIDTH/16 + WIDTH/3.5, reHeight + HEIGHT*0.01)
+    let reBtnHeight, reInputHeight, reInputWidth, reInputSpace
+    if(document.documentElement.clientWidth<450){
+        reBtnHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT/6
+        reInputHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT/12 + HEIGHT*0.02
+        btnPosBase = document.body.clientWidth/2 - WIDTH/4.2
+        reInputWidth = document.body.clientWidth/2 - WIDTH/4.2
+        reInputSpace = WIDTH/3
+    }else{
+        reBtnHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT/12
+        reInputHeight = reBtnHeight + HEIGHT*0.01
+        reInputWidth = document.documentElement.clientWidth/2 + WIDTH/16
+        reInputSpace = WIDTH/3.5
+    }
+    showCaptureBtn.position(btnPosBase, reBtnHeight)
+    switchRobotBtn.position(btnPosBase + WIDTH/9, reBtnHeight)
+    waveModeBtn.position(btnPosBase + WIDTH/9*2, reBtnHeight)
+    liveModeBtn.position(btnPosBase + WIDTH/9*2.8, reBtnHeight)
+    alphaModeBtn.position(btnPosBase + WIDTH/9*3.6, reBtnHeight)
+    hashInput.position(reInputWidth, reInputHeight);
+    hashBtn.position(reInputWidth + reInputSpace, reInputHeight)
     // button size
     
-    showCaptureBtn.size(WIDTH/20, WIDTH/20)
-    switchRobotBtn.size(WIDTH/20, WIDTH/20)
-    waveModeBtn.size(WIDTH/20, WIDTH/20)
-    liveModeBtn.size(WIDTH/20, WIDTH/20)
-    alphaModeBtn.size(WIDTH/20, WIDTH/20)
-    hashInput.size(WIDTH/3.5, WIDTH/20)
-    hashBtn.size(WIDTH/8, WIDTH/20)
-    hashInput.style('font-size', HEIGHT*0.02);
-    hashBtn.style('font-size', HEIGHT*0.02);
+    let btnSize, inputSize1, inputSize2, inputHeight
+    if(document.documentElement.clientWidth<450){
+        btnSize = WIDTH/15
+        inputSize1 = WIDTH/3
+        inputSize2 = WIDTH/8
+    }else{
+        btnSize = WIDTH/20
+        inputSize1 = WIDTH/3.5
+        inputSize2 = WIDTH/8
+    }
+    inputHeight = WIDTH/20
+    showCaptureBtn.size(btnSize, btnSize)
+    switchRobotBtn.size(btnSize, btnSize)
+    waveModeBtn.size(btnSize, btnSize)
+    liveModeBtn.size(btnSize, btnSize)
+    alphaModeBtn.size(btnSize,btnSize)
+    hashInput.size(inputSize1, inputHeight)
+    hashBtn.size(inputSize2, inputHeight)
+    hashInput.style('font-size', HEIGHT*0.01);
+    hashBtn.style('font-size', HEIGHT*0.01);
 
     //-----Load Model Hint-----// 
     if(!isModelLoaded){
@@ -1242,20 +1255,35 @@ function draw() {
     //     rect(0,HEIGHT-WIDTH/8.5,WIDTH, WIDTH/10)
     // }else{
     // }
-    rect(0,HEIGHT-WIDTH/10.5,WIDTH/2 + WIDTH/50, WIDTH/10)
+    if(document.documentElement.clientWidth<450){
+        rect(0,HEIGHT-WIDTH/5.5,WIDTH, WIDTH/5)
+    }else{
+        rect(0,HEIGHT-WIDTH/10.5,WIDTH/2 + WIDTH/50, WIDTH/10)
+    }
     textSize(HEIGHT*0.02);
     textAlign(CENTER);
     fill(255)
-    let textPosBase = WIDTH /40*2.5;
-    text("Show/Close", textPosBase, HEIGHT - WIDTH/100);
-    text("Random", textPosBase + WIDTH/9, HEIGHT - WIDTH/100);
-    text("Sea", textPosBase + WIDTH/9 * 2, HEIGHT - WIDTH/100);
-    text("Live", textPosBase + WIDTH/9 * 2.8, HEIGHT - WIDTH/100);
-    text("Alpha", textPosBase + WIDTH/9 * 3.6, HEIGHT - WIDTH/100);
+    let textPosBase, textPosBaseHeight, lineStart, lineEnd
+    if(document.documentElement.clientWidth<450){
+        textPosBase = WIDTH/3.4
+        textPosBaseHeight = HEIGHT - WIDTH/12.5
+        lineStart = WIDTH/6
+        lineEnd = WIDTH/10
+    }else{
+        textPosBase = WIDTH /40*2.5;
+        textPosBaseHeight = HEIGHT - WIDTH/100
+        lineStart = WIDTH/13
+        lineEnd = WIDTH/100
+    }
+    text("Show/Close", textPosBase, textPosBaseHeight);
+    text("Random", textPosBase + WIDTH/9, textPosBaseHeight);
+    text("Sea", textPosBase + WIDTH/9 * 2, textPosBaseHeight);
+    text("Live", textPosBase + WIDTH/9 * 2.8, textPosBaseHeight);
+    text("Alpha", textPosBase + WIDTH/9 * 3.6, textPosBaseHeight);
     stroke(255)
     strokeWeight(0.8)
-    line(textPosBase + WIDTH/18, HEIGHT - WIDTH/13, textPosBase + WIDTH/18, HEIGHT - WIDTH/100)
-    line(textPosBase + WIDTH/6, HEIGHT - WIDTH/13, textPosBase + WIDTH/6, HEIGHT - WIDTH/100)
+    line(textPosBase + WIDTH/18, HEIGHT - lineStart, textPosBase + WIDTH/18, HEIGHT - lineEnd)
+    line(textPosBase + WIDTH/6, HEIGHT - lineStart, textPosBase + WIDTH/6, HEIGHT - lineEnd)
     pop()
     push();
     blendMode(MULTIPLY);
