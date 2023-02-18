@@ -694,9 +694,9 @@ let facialFeatures = new FacialFeatures({
     mouthRightMultiply: 0,
     centerX: 0
 });
-let btnPosBase
+let btnPosBase, saveBtnPos
 
-let ShowCloseBtn, RandomBtn, SeaBtn, LiveBtn, AlphaBtn, btnText, bgRect, spaceLine1, spaceLine2
+let ShowCloseBtn, RandomBtn, SeaBtn, LiveBtn, AlphaBtn, saveBtn, btnText, bgRect, spaceLine1, spaceLine2
 let mobileTextSpace, pcTextSpace
 let line1
 
@@ -822,6 +822,14 @@ function setup() {
     alphaModeBtn.mouseOver(() =>alphaModeBtn.style("opacity", "1"));
     alphaModeBtn.mouseOut(() =>alphaModeBtn.style("opacity", "0.85"));
     alphaModeBtn.mousePressed(setBgMode3)
+
+    saveBtn = createImg('img/Save.png');
+	saveBtn.size(WIDTH/12, WIDTH/12)
+    saveBtn.style("opacity","0.85")   
+	saveBtn.position(document.documentElement.clientWidth/2 + WIDTH/2 - WIDTH/10, 0)
+    saveBtn.mouseOver(() =>saveBtn.style("opacity", "1"));
+    saveBtn.mouseOut(() =>saveBtn.style("opacity", "0.85"));
+    saveBtn.mousePressed(saveImg)
 
     hashInput = createInput().attribute('placeholder', 'Enter the hash of your HAM');
     hashInput.style('font-size', HEIGHT*0.02);
@@ -959,6 +967,10 @@ function setBgMode3(){
 
 function setShowCapture(){
     showCapture = !showCapture;
+}
+
+function saveImg(){
+    save('Sail-o-bots.png')
 }
 
 function setLoop(){
@@ -1213,20 +1225,23 @@ function draw() {
     
 } 
     // button position
-    let reBtnHeight, reInputHeight, reInputWidth, reInputSpace, btnSpace
+    let reBtnHeight, reInputHeight, reInputWidth, reInputSpace, btnSpace, saveBtnHeight
     if(document.documentElement.clientWidth<450){
-        reBtnHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.03
-        reInputHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.27
+        reBtnHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.06
+        reInputHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.33
         btnPosBase = WIDTH*0.075
         btnSpace = WIDTH/5
         reInputWidth = WIDTH*0.075
         reInputSpace = WIDTH*0.65
+        saveBtnPos = document.documentElement.clientWidth/2 + WIDTH/2 - WIDTH/8;
+        saveBtnHeight =document.body.clientHeight/2 - HEIGHT/2
     }else{
         reBtnHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT/12
         reInputHeight = reBtnHeight + HEIGHT*0.01
         reInputWidth = document.documentElement.clientWidth/2 + WIDTH/16
         reInputSpace = WIDTH/3.5
         btnSpace = WIDTH/9
+        saveBtnHeight = document.body.clientHeight/2 - HEIGHT/2
     }
     showCaptureBtn.position(btnPosBase, reBtnHeight)
     switchRobotBtn.position(btnPosBase + btnSpace*1.05, reBtnHeight)
@@ -1235,21 +1250,24 @@ function draw() {
     alphaModeBtn.position(btnPosBase + btnSpace*3.6, reBtnHeight)
     hashInput.position(reInputWidth, reInputHeight);
     hashBtn.position(reInputWidth + reInputSpace, reInputHeight)
+    saveBtn.position(saveBtnPos, saveBtnHeight)
     // button size
     
-    let btnSize, inputSize1, inputSize2, inputHeight, inputTextSize
+    let btnSize, inputSize1, inputSize2, inputHeight, inputTextSize, saveBtnSize
     if(document.documentElement.clientWidth<450){
         btnSize = WIDTH/8
         inputSize1 = WIDTH*0.65
         inputSize2 = WIDTH*0.2
         inputHeight = WIDTH*0.1
         inputTextSize = HEIGHT*0.03
+        saveBtnSize = WIDTH/9
     }else{
         btnSize = WIDTH/20
         inputSize1 = WIDTH/3.5
         inputSize2 = WIDTH/8
         inputHeight = WIDTH/20
         inputTextSize = HEIGHT*0.02
+        saveBtnSize = WIDTH/12
     }
     
     showCaptureBtn.size(btnSize, btnSize)
@@ -1261,6 +1279,7 @@ function draw() {
     hashBtn.size(inputSize2, inputHeight)
     hashInput.style('font-size', inputTextSize);
     hashBtn.style('font-size', inputTextSize);
+	saveBtn.size(saveBtnSize, saveBtnSize)
 
     //-----Load Model Hint-----// 
     if(!isModelLoaded){
@@ -1314,7 +1333,7 @@ function draw() {
     let textPosBase, textPosBaseHeight, lineStart, lineEnd
     if(document.documentElement.clientWidth<450){
         textPosBase = WIDTH*0.055
-        textPosBaseHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.17
+        textPosBaseHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.21
         lineStart = WIDTH/6
         lineEnd = WIDTH/10
 
@@ -1326,11 +1345,11 @@ function draw() {
         spaceLine1.style('background', 'white')
         spaceLine1.position(document.body.clientWidth/2 - WIDTH/2 + WIDTH*0.24, document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.05)
         spaceLine1.style('width', "1px")
-        spaceLine1.style('height', HEIGHT*0.08 +"px")
+        spaceLine1.style('height', HEIGHT*0.19 +"px")
         spaceLine2.style('background', 'white')
         spaceLine2.position(document.body.clientWidth/2 - WIDTH/2 + WIDTH*0.44, document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.05)
         spaceLine2.style('width', "1px")
-        spaceLine2.style('height', HEIGHT*0.08 +"px")
+        spaceLine2.style('height', HEIGHT*0.19 +"px")
     }else{
         textPosBase = document.body.clientWidth/2 - WIDTH/2 + HEIGHT*0.01
         textPosBaseHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT*0.03
@@ -1340,17 +1359,18 @@ function draw() {
         btnText.forEach(function(btn, index){
             btn.style('font-size', HEIGHT*0.02 + "px");
             btn.style('color', 'white');
+            btn.style('font-family','Roboto');
             btn.position(textPosBase + pcTextSpace[index] * WIDTH, textPosBaseHeight)
         })
         
         spaceLine1.style('background', 'white')
         spaceLine1.position(document.body.clientWidth/2 - WIDTH/2 + WIDTH*0.12, document.body.clientHeight/2 + HEIGHT/2 - HEIGHT*0.09)
         spaceLine1.style('width', "1px")
-        spaceLine1.style('height', HEIGHT*0.06 +"px")
+        spaceLine1.style('height', HEIGHT*0.08 +"px")
         spaceLine2.style('background', 'white')
         spaceLine2.position(document.body.clientWidth/2 - WIDTH/2 + WIDTH*0.23, document.body.clientHeight/2 + HEIGHT/2 - HEIGHT*0.09)
         spaceLine2.style('width', "1px")
-        spaceLine2.style('height', HEIGHT*0.06 +"px")
+        spaceLine2.style('height', HEIGHT*0.08 +"px")
     }
     
     pop()
@@ -1517,6 +1537,7 @@ function windowResized() {
     ellipse1$ = HEIGHT / 5 + HEIGHT / 30
     ellipse2$ = HEIGHT / 5 + HEIGHT / 15
     btnPosBase =document.documentElement.clientWidth/2 - WIDTH/2 + WIDTH /40*1.5;
+    saveBtnPos = document.documentElement.clientWidth/2 + WIDTH/2 - WIDTH/10;
 }
 </script><style type="text/css">html {
   height: 100%;
