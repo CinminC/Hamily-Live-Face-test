@@ -1215,8 +1215,8 @@ function draw() {
     // button position
     let reBtnHeight, reInputHeight, reInputWidth, reInputSpace, btnSpace
     if(document.documentElement.clientWidth<450){
-        reBtnHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.03
-        reInputHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.27
+        reBtnHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.06
+        reInputHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.33
         btnPosBase = WIDTH*0.075
         btnSpace = WIDTH/5
         reInputWidth = WIDTH*0.075
@@ -1314,7 +1314,7 @@ function draw() {
     let textPosBase, textPosBaseHeight, lineStart, lineEnd
     if(document.documentElement.clientWidth<450){
         textPosBase = WIDTH*0.055
-        textPosBaseHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.17
+        textPosBaseHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.21
         lineStart = WIDTH/6
         lineEnd = WIDTH/10
 
@@ -1326,11 +1326,11 @@ function draw() {
         spaceLine1.style('background', 'white')
         spaceLine1.position(document.body.clientWidth/2 - WIDTH/2 + WIDTH*0.24, document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.05)
         spaceLine1.style('width', "1px")
-        spaceLine1.style('height', HEIGHT*0.08 +"px")
+        spaceLine1.style('height', HEIGHT*0.19 +"px")
         spaceLine2.style('background', 'white')
         spaceLine2.position(document.body.clientWidth/2 - WIDTH/2 + WIDTH*0.44, document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.05)
         spaceLine2.style('width', "1px")
-        spaceLine2.style('height', HEIGHT*0.08 +"px")
+        spaceLine2.style('height', HEIGHT*0.19 +"px")
     }else{
         textPosBase = document.body.clientWidth/2 - WIDTH/2 + HEIGHT*0.01
         textPosBaseHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT*0.03
@@ -1346,11 +1346,11 @@ function draw() {
         spaceLine1.style('background', 'white')
         spaceLine1.position(document.body.clientWidth/2 - WIDTH/2 + WIDTH*0.12, document.body.clientHeight/2 + HEIGHT/2 - HEIGHT*0.09)
         spaceLine1.style('width', "1px")
-        spaceLine1.style('height', HEIGHT*0.06 +"px")
+        spaceLine1.style('height', HEIGHT*0.08 +"px")
         spaceLine2.style('background', 'white')
         spaceLine2.position(document.body.clientWidth/2 - WIDTH/2 + WIDTH*0.23, document.body.clientHeight/2 + HEIGHT/2 - HEIGHT*0.09)
         spaceLine2.style('width', "1px")
-        spaceLine2.style('height', HEIGHT*0.06 +"px")
+        spaceLine2.style('height', HEIGHT*0.08 +"px")
     }
     
     pop()
