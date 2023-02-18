@@ -688,6 +688,7 @@ let facialFeatures = new FacialFeatures({
     mouthRightMultiply: 0,
     centerX: 0
 });
+let btnPosBase
 
 function setup() {
     createCanvas(WIDTH, HEIGHT);
@@ -761,7 +762,9 @@ function setup() {
     c2 = color(255, 209, 102);
     c3 = color(128, 255, 219);
 
-    let btnPosBase = window.innerWidth/2 - WIDTH/2 + WIDTH /40*1.5;
+    btnPosBase = document.documentElement.clientWidth/2 - WIDTH/2 + WIDTH /40*1.5;
+
+    console.log([document.documentElement.clientWidth/2, WIDTH/2, WIDTH /40*1.5])
     showCaptureBtn = createImg('img/Capture.png');
 	showCaptureBtn.size(WIDTH/20, WIDTH/20)
     showCaptureBtn.style("opacity","0.85")
@@ -803,7 +806,8 @@ function setup() {
     alphaModeBtn.mousePressed(setBgMode3)
 
     hashInput = createInput().attribute('placeholder', 'Enter the hash of your HAM');
-	hashInput.position(window.innerWidth/2 + WIDTH/16, HEIGHT - WIDTH/15);
+    hashInput.style('font-size', HEIGHT*0.02);
+	hashInput.position(document.documentElement.clientWidth/2 + WIDTH/16, HEIGHT - WIDTH/15);
     hashInput.size(WIDTH/3.5, WIDTH/20);
 
     hashBtn = createButton('Generate!');
@@ -811,12 +815,11 @@ function setup() {
     hashBtn.style("background","#252525")   
     hashBtn.style("color","#ffffff")   
     hashBtn.style("border","none")   
-	hashBtn.position(window.innerWidth/2 + WIDTH/16 + WIDTH/3.5, HEIGHT - WIDTH/15)
+    hashBtn.style('font-size', HEIGHT*0.02);
+	hashBtn.position(document.documentElement.clientWidth/2 + WIDTH/16 + WIDTH/3.5, HEIGHT - WIDTH/15)
     hashBtn.mouseOver(() =>hashBtn.style("background","#353535"));
     hashBtn.mouseOut(() =>hashBtn.style("background","#252525"));
     hashBtn.mousePressed(hashRobotGenerate)
-
-
     // pauseBtn =createButton("Pause/Continue")
 	// pauseBtn.mousePressed(setLoop)
 	// pauseBtn.position(1500,410)
@@ -965,6 +968,7 @@ function draw() {
     randomSeed(seedNum);
     clear(); 
     noStroke();
+    video.size(width, height);
     //------poseNet------//
     // push()
     //     imageMode(CORNER);
@@ -1153,10 +1157,10 @@ function draw() {
     if(showCapture){
     push();
     fill(250)
-    textSize(20);
-    text("Face", 10, 20);
-    text("posX: "+floor(smoothedRobotPos.x), 10, 50);
-    text("posY: "+floor(smoothedRobotPos.y), 10, 80);
+    textSize(HEIGHT * 0.03);
+    text("Face", 10, HEIGHT * 0.03);
+    text("posX: "+floor(smoothedRobotPos.x), 10, HEIGHT * 0.07);
+    text("posY: "+floor(smoothedRobotPos.y), 10, HEIGHT * 0.11);
     // push()
     // textSize(15);
     // textAlign(RIGHT);
@@ -1166,8 +1170,52 @@ function draw() {
     // text("Pause or continue: Press Space", width-30, 105);
     // text("Show or close the hint: Press 'H'", width-30, 130);
     // pop()
- 
-    } 
+
+    
+} 
+    // button position
+    let reBtnHeight, reInputHeight, reInputWidth, reInputSpace
+    if(document.documentElement.clientWidth<450){
+        reBtnHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT/6
+        reInputHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT/12 + HEIGHT*0.02
+        btnPosBase = document.body.clientWidth/2 - WIDTH/4.2
+        reInputWidth = document.body.clientWidth/2 - WIDTH/4.2
+        reInputSpace = WIDTH/3
+    }else{
+        reBtnHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT/12
+        reInputHeight = reBtnHeight + HEIGHT*0.01
+        reInputWidth = document.documentElement.clientWidth/2 + WIDTH/16
+        reInputSpace = WIDTH/3.5
+    }
+    showCaptureBtn.position(btnPosBase, reBtnHeight)
+    switchRobotBtn.position(btnPosBase + WIDTH/9, reBtnHeight)
+    waveModeBtn.position(btnPosBase + WIDTH/9*2, reBtnHeight)
+    liveModeBtn.position(btnPosBase + WIDTH/9*2.8, reBtnHeight)
+    alphaModeBtn.position(btnPosBase + WIDTH/9*3.6, reBtnHeight)
+    hashInput.position(reInputWidth, reInputHeight);
+    hashBtn.position(reInputWidth + reInputSpace, reInputHeight)
+    // button size
+    
+    let btnSize, inputSize1, inputSize2, inputHeight
+    if(document.documentElement.clientWidth<450){
+        btnSize = WIDTH/15
+        inputSize1 = WIDTH/3
+        inputSize2 = WIDTH/8
+    }else{
+        btnSize = WIDTH/20
+        inputSize1 = WIDTH/3.5
+        inputSize2 = WIDTH/8
+    }
+    inputHeight = WIDTH/20
+    showCaptureBtn.size(btnSize, btnSize)
+    switchRobotBtn.size(btnSize, btnSize)
+    waveModeBtn.size(btnSize, btnSize)
+    liveModeBtn.size(btnSize, btnSize)
+    alphaModeBtn.size(btnSize,btnSize)
+    hashInput.size(inputSize1, inputHeight)
+    hashBtn.size(inputSize2, inputHeight)
+    hashInput.style('font-size', HEIGHT*0.01);
+    hashBtn.style('font-size', HEIGHT*0.01);
 
     //-----Load Model Hint-----// 
     if(!isModelLoaded){
@@ -1203,20 +1251,39 @@ function draw() {
     //-----UI-----//
     push()
     fill(37,37,37,200)
-    rect(0,HEIGHT-WIDTH/10.5,WIDTH/2 + WIDTH/50, WIDTH/10)
-    textSize(12);
+    // if(document.body.clientWidth < 450){
+    //     rect(0,HEIGHT-WIDTH/8.5,WIDTH, WIDTH/10)
+    // }else{
+    // }
+    if(document.documentElement.clientWidth<450){
+        rect(0,HEIGHT-WIDTH/5.5,WIDTH, WIDTH/5)
+    }else{
+        rect(0,HEIGHT-WIDTH/10.5,WIDTH/2 + WIDTH/50, WIDTH/10)
+    }
+    textSize(HEIGHT*0.02);
     textAlign(CENTER);
     fill(255)
-    let textPosBase = WIDTH /40*2.5;
-    text("Show/Close", textPosBase, HEIGHT - WIDTH/100);
-    text("Random", textPosBase + WIDTH/9, HEIGHT - WIDTH/100);
-    text("Sea", textPosBase + WIDTH/9 * 2, HEIGHT - WIDTH/100);
-    text("Live", textPosBase + WIDTH/9 * 2.8, HEIGHT - WIDTH/100);
-    text("Alpha", textPosBase + WIDTH/9 * 3.6, HEIGHT - WIDTH/100);
+    let textPosBase, textPosBaseHeight, lineStart, lineEnd
+    if(document.documentElement.clientWidth<450){
+        textPosBase = WIDTH/3.4
+        textPosBaseHeight = HEIGHT - WIDTH/12.5
+        lineStart = WIDTH/6
+        lineEnd = WIDTH/10
+    }else{
+        textPosBase = WIDTH /40*2.5;
+        textPosBaseHeight = HEIGHT - WIDTH/100
+        lineStart = WIDTH/13
+        lineEnd = WIDTH/100
+    }
+    text("Show/Close", textPosBase, textPosBaseHeight);
+    text("Random", textPosBase + WIDTH/9, textPosBaseHeight);
+    text("Sea", textPosBase + WIDTH/9 * 2, textPosBaseHeight);
+    text("Live", textPosBase + WIDTH/9 * 2.8, textPosBaseHeight);
+    text("Alpha", textPosBase + WIDTH/9 * 3.6, textPosBaseHeight);
     stroke(255)
     strokeWeight(0.8)
-    line(textPosBase + WIDTH/18, HEIGHT - WIDTH/13, textPosBase + WIDTH/18, HEIGHT - WIDTH/100)
-    line(textPosBase + WIDTH/6, HEIGHT - WIDTH/13, textPosBase + WIDTH/6, HEIGHT - WIDTH/100)
+    line(textPosBase + WIDTH/18, HEIGHT - lineStart, textPosBase + WIDTH/18, HEIGHT - lineEnd)
+    line(textPosBase + WIDTH/6, HEIGHT - lineStart, textPosBase + WIDTH/6, HEIGHT - lineEnd)
     pop()
     push();
     blendMode(MULTIPLY);
@@ -1358,6 +1425,19 @@ function keyPressed(){
     //     bgMode = 3;
     // }
     // return false;
+}
+function windowResized() {
+    WIDTH = Math.min(window.innerWidth,window.innerHeight)
+    HEIGHT = Math.min(window.innerWidth,window.innerHeight)
+    resizeCanvas(WIDTH, HEIGHT);
+    availableNoiseLevels = [WIDTH / 25, WIDTH / 9, WIDTH / 5]
+    DIM = Math.min(WIDTH, HEIGHT);
+    boxWidth = WIDTH;
+    faceSize = WIDTH;
+    M = DIM / DEFAULT_SIZE;
+    ellipse1$ = HEIGHT / 5 + HEIGHT / 30
+    ellipse2$ = HEIGHT / 5 + HEIGHT / 15
+    btnPosBase =document.documentElement.clientWidth/2 - WIDTH/2 + WIDTH /40*1.5;
 }
 </script><style type="text/css">html {
   height: 100%;
