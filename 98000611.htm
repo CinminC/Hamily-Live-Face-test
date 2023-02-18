@@ -1201,7 +1201,7 @@ function draw() {
         fill(255)
         textFont('Roboto');
         textStyle(BOLD);
-        textSize(20);
+        textSize(HEIGHT/35);
         textAlign(CENTER, CENTER);
         text("Loading Face Tracking Model ...",0,0)
         pop()
@@ -1215,7 +1215,7 @@ function draw() {
         fill(255)
         textFont('Roboto');
         textStyle(BOLD);
-        textSize(24);
+        textSize(HEIGHT/30);
         textAlign(CENTER, CENTER);
         text("Loaded!",0,0)
         pop()
@@ -1240,10 +1240,14 @@ function draw() {
     line(textPosBase + WIDTH/18, HEIGHT - WIDTH/13, textPosBase + WIDTH/18, HEIGHT - WIDTH/100)
     line(textPosBase + WIDTH/6, HEIGHT - WIDTH/13, textPosBase + WIDTH/6, HEIGHT - WIDTH/100)
     pop()
-    push();
-    blendMode(MULTIPLY);
-    image(overAllTexture, 0, 0);
-    pop();
+
+    if(bgMode == 1 || bgMode ==2){
+        push();
+        blendMode(MULTIPLY);
+        image(overAllTexture, 0, 0);
+        pop();
+    }
+
     window.showFps && stats?.end?.()
 }
 
