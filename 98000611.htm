@@ -1216,7 +1216,7 @@ function draw() {
     let reBtnHeight, reInputHeight, reInputWidth, reInputSpace, btnSpace
     if(document.documentElement.clientWidth<450){
         reBtnHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.03
-        reInputHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.24
+        reInputHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.27
         btnPosBase = WIDTH*0.075
         btnSpace = WIDTH/5
         reInputWidth = WIDTH*0.075
@@ -1363,39 +1363,6 @@ function draw() {
     }
 
     window.showFps && stats?.end?.()
-}
-
-function createLineElement(x, y, length, angle, Lid) {
-    var line = document.createElement("div");
-    var styles = 'border: 0.3px solid white; '
-               + 'width: ' + length + 'px; '
-               + 'height: 0px; '
-               + '-moz-transform: rotate(' + angle + 'rad); '
-               + '-webkit-transform: rotate(' + angle + 'rad); '
-               + '-o-transform: rotate(' + angle + 'rad); '
-               + '-ms-transform: rotate(' + angle + 'rad); '
-               + 'position: absolute; '
-               + 'top: ' + y + 'px; '
-               + 'left: ' + x + 'px; ';
-    line.setAttribute('style', styles);
-    line.id(Lid)
-    return line;
-}
-
-function createLine(x1, y1, x2, y2, Lid) {
-    var a = x1 - x2,
-        b = y1 - y2,
-        c = Math.sqrt(a * a + b * b);
-
-    var sx = (x1 + x2) / 2,
-        sy = (y1 + y2) / 2;
-
-    var x = sx - c / 2,
-        y = sy;
-
-    var alpha = Math.PI - Math.atan2(-b, a);
-
-    return createLineElement(x, y, c, alpha, Lid);
 }
 
 function sol(gunesColor) {
