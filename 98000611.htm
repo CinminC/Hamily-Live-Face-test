@@ -18,7 +18,7 @@ if (window.showFps) {
                 document.body.appendChild(stats.dom);
             console.log(stats.dom)
             stats.dom.style.left = "initial"
-            stats.dom.style.bottom = "0px"
+            stats.dom.style.bottom = "500px"
 
         });
 }
@@ -690,6 +690,10 @@ let facialFeatures = new FacialFeatures({
 });
 let btnPosBase
 
+let ShowCloseBtn, RandomBtn, SeaBtn, LiveBtn, AlphaBtn, btnText, bgRect, spaceLine1, spaceLine2
+let mobileTextSpace, pcTextSpace
+let line1
+
 function setup() {
     createCanvas(WIDTH, HEIGHT);
     webGlGraphics = createGraphics(width * 2,height * 2,WEBGL);
@@ -762,6 +766,16 @@ function setup() {
     c2 = color(255, 209, 102);
     c3 = color(128, 255, 219);
 
+    bgRect = createDiv("")
+    ShowCloseBtn = createDiv("Show/Close");
+    RandomBtn = createDiv("Random");
+    SeaBtn = createDiv("Sea");
+    LiveBtn = createDiv("Live");
+    AlphaBtn = createDiv("Alpha");
+    btnText = [ShowCloseBtn, RandomBtn, SeaBtn, LiveBtn, AlphaBtn]
+    mobileTextSpace = [0,0.235,0.455,0.615,0.765]
+    pcTextSpace = [0,0.13,0.26,0.345,0.43]
+
     btnPosBase = document.documentElement.clientWidth/2 - WIDTH/2 + WIDTH /40*1.5;
 
     console.log([document.documentElement.clientWidth/2, WIDTH/2, WIDTH /40*1.5])
@@ -823,6 +837,9 @@ function setup() {
     // pauseBtn =createButton("Pause/Continue")
 	// pauseBtn.mousePressed(setLoop)
 	// pauseBtn.position(1500,410)
+
+    spaceLine1 = createDiv("")
+    spaceLine2 = createDiv("")
 }
 
 function modelReady() {
@@ -1174,39 +1191,45 @@ function draw() {
     
 } 
     // button position
-    let reBtnHeight, reInputHeight, reInputWidth, reInputSpace
+    let reBtnHeight, reInputHeight, reInputWidth, reInputSpace, btnSpace
     if(document.documentElement.clientWidth<450){
-        reBtnHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT/6
-        reInputHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT/12 + HEIGHT*0.02
-        btnPosBase = document.body.clientWidth/2 - WIDTH/4.2
-        reInputWidth = document.body.clientWidth/2 - WIDTH/4.2
-        reInputSpace = WIDTH/3
+        reBtnHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.03
+        reInputHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.24
+        btnPosBase = WIDTH*0.075
+        btnSpace = WIDTH/5
+        reInputWidth = WIDTH*0.075
+        reInputSpace = WIDTH*0.65
     }else{
         reBtnHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT/12
         reInputHeight = reBtnHeight + HEIGHT*0.01
         reInputWidth = document.documentElement.clientWidth/2 + WIDTH/16
         reInputSpace = WIDTH/3.5
+        btnSpace = WIDTH/9
     }
     showCaptureBtn.position(btnPosBase, reBtnHeight)
-    switchRobotBtn.position(btnPosBase + WIDTH/9, reBtnHeight)
-    waveModeBtn.position(btnPosBase + WIDTH/9*2, reBtnHeight)
-    liveModeBtn.position(btnPosBase + WIDTH/9*2.8, reBtnHeight)
-    alphaModeBtn.position(btnPosBase + WIDTH/9*3.6, reBtnHeight)
+    switchRobotBtn.position(btnPosBase + btnSpace*1.05, reBtnHeight)
+    waveModeBtn.position(btnPosBase + btnSpace*2, reBtnHeight)
+    liveModeBtn.position(btnPosBase + btnSpace*2.8, reBtnHeight)
+    alphaModeBtn.position(btnPosBase + btnSpace*3.6, reBtnHeight)
     hashInput.position(reInputWidth, reInputHeight);
     hashBtn.position(reInputWidth + reInputSpace, reInputHeight)
     // button size
     
-    let btnSize, inputSize1, inputSize2, inputHeight
+    let btnSize, inputSize1, inputSize2, inputHeight, inputTextSize
     if(document.documentElement.clientWidth<450){
-        btnSize = WIDTH/15
-        inputSize1 = WIDTH/3
-        inputSize2 = WIDTH/8
+        btnSize = WIDTH/8
+        inputSize1 = WIDTH*0.65
+        inputSize2 = WIDTH*0.2
+        inputHeight = WIDTH*0.1
+        inputTextSize = HEIGHT*0.03
     }else{
         btnSize = WIDTH/20
         inputSize1 = WIDTH/3.5
         inputSize2 = WIDTH/8
+        inputHeight = WIDTH/20
+        inputTextSize = HEIGHT*0.02
     }
-    inputHeight = WIDTH/20
+    
     showCaptureBtn.size(btnSize, btnSize)
     switchRobotBtn.size(btnSize, btnSize)
     waveModeBtn.size(btnSize, btnSize)
@@ -1214,8 +1237,8 @@ function draw() {
     alphaModeBtn.size(btnSize,btnSize)
     hashInput.size(inputSize1, inputHeight)
     hashBtn.size(inputSize2, inputHeight)
-    hashInput.style('font-size', HEIGHT*0.01);
-    hashBtn.style('font-size', HEIGHT*0.01);
+    hashInput.style('font-size', inputTextSize);
+    hashBtn.style('font-size', inputTextSize);
 
     //-----Load Model Hint-----// 
     if(!isModelLoaded){
@@ -1223,11 +1246,11 @@ function draw() {
         translate(WIDTH/2,HEIGHT/2)
         fill(37,37,37)
         rectMode(CENTER)
-        rect(0,0,WIDTH/2,WIDTH/10)
+        rect(0,0,WIDTH*0.9,WIDTH/10)
         fill(255)
         textFont('Roboto');
         textStyle(BOLD);
-        textSize(20);
+        textSize(HEIGHT*0.06);
         textAlign(CENTER, CENTER);
         text("Loading Face Tracking Model ...",0,0)
         pop()
@@ -1241,7 +1264,7 @@ function draw() {
         fill(255)
         textFont('Roboto');
         textStyle(BOLD);
-        textSize(24);
+        textSize(HEIGHT*0.06);
         textAlign(CENTER, CENTER);
         text("Loaded!",0,0)
         pop()
@@ -1256,40 +1279,97 @@ function draw() {
     // }else{
     // }
     if(document.documentElement.clientWidth<450){
-        rect(0,HEIGHT-WIDTH/5.5,WIDTH, WIDTH/5)
+        // rect(0,HEIGHT+WIDTH/5.5,WIDTH, WIDTH/5)
     }else{
-        rect(0,HEIGHT-WIDTH/10.5,WIDTH/2 + WIDTH/50, WIDTH/10)
+        bgRect.style('background', 'rgba(37,37,37,0.8)')
+        bgRect.position(document.body.clientWidth/2 - WIDTH/2, document.body.clientHeight/2 + HEIGHT/2 - HEIGHT*0.1)
+        bgRect.style('width', WIDTH*0.52+"px")
+        bgRect.style('height', HEIGHT*0.1 +"px")
     }
     textSize(HEIGHT*0.02);
     textAlign(CENTER);
     fill(255)
     let textPosBase, textPosBaseHeight, lineStart, lineEnd
     if(document.documentElement.clientWidth<450){
-        textPosBase = WIDTH/3.4
-        textPosBaseHeight = HEIGHT - WIDTH/12.5
+        textPosBase = WIDTH*0.055
+        textPosBaseHeight = document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.17
         lineStart = WIDTH/6
         lineEnd = WIDTH/10
+
+        btnText.forEach(function(btn, index){
+            btn.style('font-size', HEIGHT*0.02 + "px");
+            btn.style('color', 'white');
+            btn.position(textPosBase + mobileTextSpace[index] * WIDTH, textPosBaseHeight)
+        })
+        spaceLine1.style('background', 'white')
+        spaceLine1.position(document.body.clientWidth/2 - WIDTH/2 + WIDTH*0.24, document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.05)
+        spaceLine1.style('width', "1px")
+        spaceLine1.style('height', HEIGHT*0.08 +"px")
+        spaceLine2.style('background', 'white')
+        spaceLine2.position(document.body.clientWidth/2 - WIDTH/2 + WIDTH*0.44, document.body.clientHeight/2 + HEIGHT/2 + HEIGHT*0.05)
+        spaceLine2.style('width', "1px")
+        spaceLine2.style('height', HEIGHT*0.08 +"px")
     }else{
-        textPosBase = WIDTH /40*2.5;
-        textPosBaseHeight = HEIGHT - WIDTH/100
+        textPosBase = document.body.clientWidth/2 - WIDTH/2 + HEIGHT*0.01
+        textPosBaseHeight = document.body.clientHeight/2 + HEIGHT/2 - HEIGHT*0.03
         lineStart = WIDTH/13
         lineEnd = WIDTH/100
+
+        btnText.forEach(function(btn, index){
+            btn.style('font-size', HEIGHT*0.02 + "px");
+            btn.style('color', 'white');
+            btn.position(textPosBase + pcTextSpace[index] * WIDTH, textPosBaseHeight)
+        })
+        
+        spaceLine1.style('background', 'white')
+        spaceLine1.position(document.body.clientWidth/2 - WIDTH/2 + WIDTH*0.12, document.body.clientHeight/2 + HEIGHT/2 - HEIGHT*0.09)
+        spaceLine1.style('width', "1px")
+        spaceLine1.style('height', HEIGHT*0.06 +"px")
+        spaceLine2.style('background', 'white')
+        spaceLine2.position(document.body.clientWidth/2 - WIDTH/2 + WIDTH*0.23, document.body.clientHeight/2 + HEIGHT/2 - HEIGHT*0.09)
+        spaceLine2.style('width', "1px")
+        spaceLine2.style('height', HEIGHT*0.06 +"px")
     }
-    text("Show/Close", textPosBase, textPosBaseHeight);
-    text("Random", textPosBase + WIDTH/9, textPosBaseHeight);
-    text("Sea", textPosBase + WIDTH/9 * 2, textPosBaseHeight);
-    text("Live", textPosBase + WIDTH/9 * 2.8, textPosBaseHeight);
-    text("Alpha", textPosBase + WIDTH/9 * 3.6, textPosBaseHeight);
-    stroke(255)
-    strokeWeight(0.8)
-    line(textPosBase + WIDTH/18, HEIGHT - lineStart, textPosBase + WIDTH/18, HEIGHT - lineEnd)
-    line(textPosBase + WIDTH/6, HEIGHT - lineStart, textPosBase + WIDTH/6, HEIGHT - lineEnd)
+    
     pop()
     push();
     blendMode(MULTIPLY);
     image(overAllTexture, 0, 0);
     pop();
     window.showFps && stats?.end?.()
+}
+
+function createLineElement(x, y, length, angle, Lid) {
+    var line = document.createElement("div");
+    var styles = 'border: 0.3px solid white; '
+               + 'width: ' + length + 'px; '
+               + 'height: 0px; '
+               + '-moz-transform: rotate(' + angle + 'rad); '
+               + '-webkit-transform: rotate(' + angle + 'rad); '
+               + '-o-transform: rotate(' + angle + 'rad); '
+               + '-ms-transform: rotate(' + angle + 'rad); '
+               + 'position: absolute; '
+               + 'top: ' + y + 'px; '
+               + 'left: ' + x + 'px; ';
+    line.setAttribute('style', styles);
+    line.id(Lid)
+    return line;
+}
+
+function createLine(x1, y1, x2, y2, Lid) {
+    var a = x1 - x2,
+        b = y1 - y2,
+        c = Math.sqrt(a * a + b * b);
+
+    var sx = (x1 + x2) / 2,
+        sy = (y1 + y2) / 2;
+
+    var x = sx - c / 2,
+        y = sy;
+
+    var alpha = Math.PI - Math.atan2(-b, a);
+
+    return createLineElement(x, y, c, alpha, Lid);
 }
 
 function sol(gunesColor) {
@@ -1447,6 +1527,7 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  background: rgb(30,30,30);
 }
 canvas {
   padding: 0;
