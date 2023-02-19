@@ -647,6 +647,7 @@ let glassSVG = Rseed.random_int(0, 17);
 let glassVector = Rseed.random_int(0, 1);
 let switchRobot;
 let showCapture = true;
+let captureText = true;
 let showHint = true;
 let controlLoop = true;
 let eyesOpen = true;
@@ -771,14 +772,14 @@ function setup() {
     c3 = color(128, 255, 219);
 
     bgRect = createDiv("")
-    ShowCloseBtn = createDiv("Show/Close");
+    ShowCloseBtn = createDiv("Close");
     RandomBtn = createDiv("Random");
     SeaBtn = createDiv("Sea");
     LiveBtn = createDiv("Live");
     AlphaBtn = createDiv("Alpha");
     btnText = [ShowCloseBtn, RandomBtn, SeaBtn, LiveBtn, AlphaBtn]
-    mobileTextSpace = [0,0.235,0.455,0.615,0.765]
-    pcTextSpace = [0,0.13,0.26,0.345,0.43]
+    mobileTextSpace = [0.045,0.235,0.455,0.615,0.765]
+    pcTextSpace = [0.025,0.13,0.257,0.345,0.43]
 
     btnPosBase = document.documentElement.clientWidth/2 - WIDTH/2 + WIDTH /40*1.5;
 
@@ -967,6 +968,12 @@ function setBgMode3(){
 
 function setShowCapture(){
     showCapture = !showCapture;
+    captureText = !captureText;
+    if(captureText){
+        ShowCloseBtn.html('Close')
+    }else{
+        ShowCloseBtn.html('Show')
+    }
 }
 
 function saveImg(){
@@ -1103,7 +1110,7 @@ function draw() {
                     // console.log(detections)
                     drawBox(detections);
                     drawLandmarks(detections);
-                    smoothedRobotPos = smoothValue(smoothedRobotPos, nose, smoothedPosValue);
+                    smoothedRobotPos = smoothValue(smoothedRobotPos, nose, 0.2);
                     faceSize = lerp(faceSize, boxWidth, smoothedPosValue);
                     facialFeatures.robotSizeMultiply = (faceSize / WIDTH) * 4.5;
                     // facialFeatures.robotSizeMultiply = 0.5 + (faceSize / WIDTH) * 1.5;
@@ -1340,6 +1347,7 @@ function draw() {
         btnText.forEach(function(btn, index){
             btn.style('font-size', HEIGHT*0.02 + "px");
             btn.style('color', 'white');
+            btn.style('font-family','Roboto');
             btn.position(textPosBase + mobileTextSpace[index] * WIDTH, textPosBaseHeight)
         })
         spaceLine1.style('background', 'white')
